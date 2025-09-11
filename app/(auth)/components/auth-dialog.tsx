@@ -3,6 +3,7 @@
 import Github from "@/assets/github.svg";
 import Google from "@/assets/google.svg";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -33,6 +34,10 @@ export function AuthDialog({
   const [isSignIn, setIsSignIn] = useState(initialMode === "signin");
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [isEmailLoading, setIsEmailLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
   const getCallbackUrl = () => {
     const baseUrl = pathname || "/editor/theme";
@@ -45,6 +50,31 @@ export function AuthDialog({
       setIsSignIn(initialMode === "signin");
     }
   }, [open, initialMode]);
+
+  const handleEmailAuth = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsEmailLoading(true);
+    try {
+      if (isSignIn) {
+        await authClient.signIn.email({
+          email,
+          password,
+          callbackURL: getCallbackUrl(),
+        });
+      } else {
+        await authClient.signUp.email({
+          name,
+          email,
+          password,
+          callbackURL: getCallbackUrl(),
+        });
+      }
+    } catch (error) {
+      console.error("Email Auth Error:", error);
+    } finally {
+      setIsEmailLoading(false);
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
@@ -93,13 +123,61 @@ export function AuthDialog({
           </ResponsiveDialogHeader>
 
           <div className="space-y-6 p-6 pt-2">
+            <form onSubmit={handleEmailAuth} className="space-y-3">
+              {!isSignIn && (
+                <Input
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              )}
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="submit"
+                size="lg"
+                className="flex w-full items-center justify-center gap-2"
+                disabled={isEmailLoading || isGoogleLoading || isGithubLoading}
+              >
+                <span className="font-medium">
+                  {isSignIn ? "Continue with Email" : "Sign up with Email"}
+                </span>
+                {isEmailLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-muted text-muted-foreground px-2">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
             <div className="space-y-3">
               <Button
                 size="lg"
                 variant="outline"
                 onClick={handleGoogleSignIn}
                 className="hover:bg-primary/10 hover:text-foreground flex w-full items-center justify-center gap-2"
-                disabled={isGoogleLoading || isGithubLoading}
+                disabled={isGoogleLoading || isGithubLoading || isEmailLoading}
               >
                 <Google className="h-5 w-5" />
                 <span className="font-medium">Continue with Google</span>
@@ -111,7 +189,7 @@ export function AuthDialog({
                 onClick={handleGithubSignIn}
                 size="lg"
                 className="hover:bg-primary/10 hover:text-foreground flex w-full items-center justify-center gap-2"
-                disabled={isGoogleLoading || isGithubLoading}
+                disabled={isGoogleLoading || isGithubLoading || isEmailLoading}
               >
                 <Github className="h-5 w-5" />
                 <span className="font-medium">Continue with GitHub</span>
