@@ -29,7 +29,7 @@ export async function validateSubscriptionAndUsage(userId: string): Promise<Subs
 
     const isSubscribed =
       !!activeSubscription &&
-      activeSubscription?.productId === process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
+      activeSubscription?.productId === process.env.NEXT_PUBLIC_PRO_PLAN_PRODUCT_ID;
 
     if (isSubscribed) {
       return {
