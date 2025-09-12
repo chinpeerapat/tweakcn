@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const text = response.output?.[0]?.content?.[0]?.text ?? "";
+    const text = response.output_text ?? "";
     return new Response(JSON.stringify({ text }), {
       headers: { "Content-Type": "application/json" },
     });
