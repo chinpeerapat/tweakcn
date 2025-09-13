@@ -13,7 +13,7 @@ type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 export async function POST(req: NextRequest) {
   try {
     // Auth + subscription check (throws if unauthorized or over free quota)
-    const userId = await getCurrentUserId(req);
+    const _userId = await getCurrentUserId(req);
     await requireSubscriptionOrFreeUsage(req);
 
     // Rate limit (returns a 429 response when exceeded)
