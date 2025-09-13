@@ -18,11 +18,15 @@ export function AuthDialogWrapper() {
     }
 
     if (session && session.user && session.user.email) {
-      // Identify user with PostHog
-      posthog.identify(session.user.email, {
-        name: session.user.name,
-        email: session.user.email,
-      });
+      try {
+        // Identify user with PostHog when available
+        // Guard in case PostHog isn't initialized in the starter
+        // @ts-expect-error: PostHog type may be optional in starter
+        posthog?.identify?.(session.user.email, {
+          name: session.user.name,
+          email: session.user.email,
+        });
+      } catch (_) {}
     }
 
     if (session && postLoginAction) {

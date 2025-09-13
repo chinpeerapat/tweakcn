@@ -40,7 +40,7 @@ export function AuthDialog({
   const [name, setName] = useState("");
 
   const getCallbackUrl = () => {
-    const baseUrl = pathname || "/editor/theme";
+    const baseUrl = pathname || "/starter";
     const queryString = searchParams.toString();
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   };

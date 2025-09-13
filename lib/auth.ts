@@ -8,6 +8,8 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  // For local testing, trust all origins. Do NOT use in production.
+  trustedOrigins: process.env.NODE_ENV === "production" ? undefined : ["*"],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,

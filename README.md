@@ -19,7 +19,9 @@
 
 <br />
 
-**[tweakcn](https://tweakcn.com)** is a powerful Visual Theme Editor for tailwind CSS & shadcn/ui components. It comes with Beautiful theme presets to get started, while aiming to offer advanced customisation for each aspect of your UI
+**[tweakcn](https://tweakcn.com)** is a powerful Visual Theme Editor for tailwind CSS & shadcn/ui components. It comes with Beautiful theme presets to get started, while aiming to offer advanced customisation for each aspect of your UI.
+
+Looking to use this repo as an AI app starter with auth, subscriptions, and rate limiting? See STARTER.md for a quick setup and the generic AI chat endpoint.
 
 ![tweakcn.com](public/og-image.v050725.png)
 

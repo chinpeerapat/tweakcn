@@ -8,8 +8,15 @@ export const createCheckout = async () => {
   try {
     const user = await getCurrentUser();
     const customer = await getOrCreateCustomer(user);
+    const productId =
+      process.env.NEXT_PUBLIC_PRO_PRODUCT_ID ||
+      process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
+
+    if (!productId) {
+      return { error: "Missing NEXT_PUBLIC_PRO_PRODUCT_ID in environment" };
+    }
     const checkout = await polar.checkouts.create({
-      products: [process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID!],
+      products: [productId],
       customerId: customer?.id,
       successUrl: `${process.env.BASE_URL}/success?checkout_id={CHECKOUT_ID}`,
     });

@@ -27,9 +27,12 @@ export async function validateSubscriptionAndUsage(userId: string): Promise<Subs
       getMyAllTimeRequestCount(userId),
     ]);
 
-    const isSubscribed =
-      !!activeSubscription &&
-      activeSubscription?.productId === process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
+    const productId =
+      process.env.NEXT_PUBLIC_PRO_PRODUCT_ID ||
+      process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
+
+    // If productId is not configured, treat any active subscription as Pro (useful for testing)
+    const isSubscribed = !!activeSubscription && (!productId || activeSubscription.productId === productId);
 
     if (isSubscribed) {
       return {

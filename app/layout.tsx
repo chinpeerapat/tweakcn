@@ -1,14 +1,9 @@
 import { AuthDialogWrapper } from "@/components/auth-dialog-wrapper";
-import { DynamicFontLoader } from "@/components/dynamic-font-loader";
-import { GetProDialogWrapper } from "@/components/get-pro-dialog-wrapper";
-import { PostHogInit } from "@/components/posthog-init";
-import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeScript } from "@/components/theme-script";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryProvider } from "@/lib/query-client";
 import type { Metadata, Viewport } from "next";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import "./globals.css";
 
@@ -52,10 +47,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <ThemeScript />
-        <DynamicFontLoader />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -78,21 +72,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="darkreader-lock" />
       </head>
       <body>
-        <NuqsAdapter>
-          <Suspense>
-            <QueryProvider>
-              <ThemeProvider defaultTheme="light">
-                <TooltipProvider>
-                  <AuthDialogWrapper />
-                  <GetProDialogWrapper />
-                  <Toaster />
-                  {children}
-                </TooltipProvider>
-              </ThemeProvider>
-            </QueryProvider>
-          </Suspense>
-        </NuqsAdapter>
-        <PostHogInit />
+        <Suspense>
+          <QueryProvider>
+            <TooltipProvider>
+              <AuthDialogWrapper />
+              <Toaster />
+              {children}
+            </TooltipProvider>
+          </QueryProvider>
+        </Suspense>
       </body>
     </html>
   );
