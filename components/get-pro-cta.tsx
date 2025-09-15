@@ -20,15 +20,15 @@ export function GetProCTA({ className, ...props }: GetProCTAProps) {
     <Button
       variant="ghost"
       className={cn(
-        "text-primary animate-in fade-in-50 bg-primary/10 hover:bg-primary hover:text-primary-foreground shadow-none duration-300",
+        "text-primary hover:bg-primary hover:text-primary-foreground flex items-center gap-2",
         className
       )}
       asChild
       {...props}
     >
       <Link href="/pricing">
-        <Gem />
-        Get Pro
+        <Gem className="size-4" />
+        Upgrade to Pro
       </Link>
     </Button>
   );

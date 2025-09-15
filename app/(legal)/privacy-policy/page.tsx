@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | tweakcn",
-  description: "Privacy Policy for tweakcn.",
+  title: "Privacy Policy | Tweak AI",
+  description: "Privacy Policy for Tweak AI.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -115,8 +115,8 @@ export default function PrivacyPolicyPage() {
         <h2 className="text-xl font-semibold">8. Contact Us</h2>
         <p className="text-muted-foreground">
           If you have any questions or concerns about this privacy policy, please reach out at{" "}
-          <a href="mailto:sahaj@tweakcn.com" className="text-primary hover:underline">
-            sahaj@tweakcn.com
+          <a href="mailto:hello@tweakai.dev" className="text-primary hover:underline">
+            hello@tweakai.dev
           </a>
         </p>
       </section>

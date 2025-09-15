@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>tweakcn.com</h1>
+  <h1>Tweak AI</h1>
 </div>
 
 <div align="center">
@@ -8,9 +8,6 @@
   </a>
   <br />
   <br />
-  <a href="https://discord.gg/Phs4u2NM3n" target="_blank">
-    <img alt="Discord" src="https://img.shields.io/discord/1353416868769173576?style=for-the-badge&logo=discord&logoColor=%23ffffff">
-  </a>
   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/jnsahaj/tweakcn?style=for-the-badge&logo=github">
   <a href="https://x.com/iamsahaj_xyz">
     <img alt="X (formerly Twitter) URL" src="https://img.shields.io/twitter/url?url=https%3A%2F%2Fx.com%2Fiamsahaj_xyz&style=for-the-badge&logo=x&label=%40iamsahaj_xyz&color=%2300000000" />
@@ -19,21 +16,25 @@
 
 <br />
 
-**[tweakcn](https://tweakcn.com)** is a powerful Visual Theme Editor for tailwind CSS & shadcn/ui components. It comes with Beautiful theme presets to get started, while aiming to offer advanced customisation for each aspect of your UI
-
-![tweakcn.com](public/og-image.v050725.png)
+**Tweak AI** is a production-ready boilerplate for AI SaaS products built with Next.js 15, React 19, Tailwind CSS, and Drizzle ORM. It ships the plumbing every founder ends up rebuilding: authentication, subscription billing, usage metering, and an AI copilot that understands your product data.
 
 ## Motivation
 
-Websites made with shadcn/ui famously look the same. tweakcn is a tool that helps you customize shadcn/ui components visually, to make your components stand-out. The goal is to build a platform where a user can discover endless customization options and then have the ability to put their own twist on it. Check our roadmap for more information
+Shipping AI-powered experiences requires far more than a chat UI. Teams need reliable auth, billing flows, request quotas, analytics, and an interface customers can trust. Tweak AI bundles these building blocks so you can move straight to the differentiating features of your product.
 
 ## Current Features
 
-You can find the full feature list here: https://tweakcn.com/#features
+- Passwordless email auth and social login powered by Lucia
+- Polar billing integration with hosted checkout and customer portal
+- AI usage metering, rate limiting, and analytics dashboard
+- Built-in AI copilot workspace with subscription-aware limits
+- Responsive marketing site and pricing page to launch quickly
 
 ## Roadmap
 
-You can find the updated roadmap here: https://tweakcn.com/#roadmap
+- Team workspaces with shared chat history
+- Advanced analytics exports (CSV, webhooks)
+- Additional authentication providers and SSO options
 
 ## Run Locally
 

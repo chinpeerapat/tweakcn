@@ -1,40 +1,24 @@
-import { type ThemeStyleProps, type ThemeStyles } from "./theme";
+export type ChatRole = "user" | "assistant";
 
-export type MentionReference = {
+export interface ChatMessage {
   id: string;
-  label: string;
-  themeData: {
-    light: Partial<ThemeStyleProps>;
-    dark: Partial<ThemeStyleProps>;
-  };
-};
-
-export type PromptImage = {
-  url: string;
-};
-
-export type AIPromptData = {
+  role: ChatRole;
   content: string;
-  mentions: MentionReference[];
-  images?: PromptImage[];
-};
+  createdAt: number;
+  isError?: boolean;
+}
 
-export type ChatMessage = {
+export interface CreateMessageInput {
+  content: string;
+}
+
+export interface ChatRequestBody {
+  messages: Array<Pick<ChatMessage, "role" | "content">>;
+}
+
+export interface ChatResponseBody {
   id: string;
-  role: "user" | "assistant";
-  timestamp: number;
-  promptData?: AIPromptData;
-  content?: string;
-  themeStyles?: ThemeStyles;
-  isError?: boolean;
-};
-
-export type UserMessage = {
-  promptData: AIPromptData;
-};
-
-export type AssistantMessage = {
+  role: ChatRole;
   content: string;
-  themeStyles?: ThemeStyles;
-  isError?: boolean;
-};
+  createdAt: number;
+}

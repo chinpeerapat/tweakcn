@@ -1,5 +1,4 @@
-import { ThemeStyles } from "@/types/theme";
-import { pgTable, json, timestamp, boolean, text, integer } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, boolean, text, integer } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -49,17 +48,6 @@ export const verification = pgTable("verification", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at"),
   updatedAt: timestamp("updated_at"),
-});
-
-export const theme = pgTable("theme", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  styles: json("styles").$type<ThemeStyles>().notNull(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
 });
 
 export const aiUsage = pgTable("ai_usage", {

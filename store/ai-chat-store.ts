@@ -1,56 +1,47 @@
-import { AssistantMessage, ChatMessage, UserMessage } from "@/types/ai";
+import { ChatMessage } from "@/types/ai";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { idbStorage } from "./idb-storage";
 
 interface AIChatStore {
   messages: ChatMessage[];
-  getDefaultMessage: () => ChatMessage;
   addMessage: (message: ChatMessage) => void;
-  addUserMessage: (message: UserMessage) => void;
-  addAssistantMessage: (message: AssistantMessage) => void;
+  addUserMessage: (content: string) => ChatMessage;
+  addAssistantMessage: (content: string, options?: { isError?: boolean }) => ChatMessage;
   clearMessages: () => void;
   resetMessagesUpToIndex: (index: number) => void;
+  getWelcomeMessage: () => ChatMessage;
 }
 
 export const useAIChatStore = create<AIChatStore>()(
   persist(
     (set) => ({
       messages: [],
-      getDefaultMessage: () => {
-        const defaultMessage: ChatMessage = {
-          id: "default-message",
-          content: "How can I help you theme?",
-          role: "assistant",
-          timestamp: Date.now(),
-        };
-
-        return defaultMessage;
-      },
       addMessage: (message: ChatMessage) => {
         set((state) => ({ messages: [...state.messages, message] }));
       },
-      addUserMessage: (message: UserMessage) => {
-        const userMessage: ChatMessage = {
+      addUserMessage: (content: string) => {
+        const message: ChatMessage = {
           id: crypto.randomUUID(),
-          promptData: message.promptData,
           role: "user",
-          timestamp: Date.now(),
+          content,
+          createdAt: Date.now(),
         };
 
-        set((state) => ({ messages: [...state.messages, userMessage] }));
+        set((state) => ({ messages: [...state.messages, message] }));
+        return message;
       },
-      addAssistantMessage: (message: AssistantMessage) => {
-        const assistantMessage: ChatMessage = {
+      addAssistantMessage: (content: string, options) => {
+        const message: ChatMessage = {
           id: crypto.randomUUID(),
-          content: message.content,
-          themeStyles: message.themeStyles,
-          isError: message.isError,
           role: "assistant",
-          timestamp: Date.now(),
+          content,
+          createdAt: Date.now(),
+          isError: options?.isError,
         };
 
-        set((state) => ({ messages: [...state.messages, assistantMessage] }));
+        set((state) => ({ messages: [...state.messages, message] }));
+        return message;
       },
       clearMessages: () => {
         set({ messages: [] });
@@ -58,6 +49,12 @@ export const useAIChatStore = create<AIChatStore>()(
       resetMessagesUpToIndex: (index: number) => {
         set((state) => ({ messages: state.messages.slice(0, index) }));
       },
+      getWelcomeMessage: () => ({
+        id: "welcome-message",
+        role: "assistant",
+        content: "Ask me anything about your product data, billing, or AI usage.",
+        createdAt: Date.now(),
+      }),
     }),
     {
       name: "ai-chat-storage",
@@ -66,19 +63,8 @@ export const useAIChatStore = create<AIChatStore>()(
   )
 );
 
-export const getUserMessagesCount = (messages: ChatMessage[]) => {
-  return messages.filter((message) => message.role === "user").length;
-};
+export const getUserMessagesCount = (messages: ChatMessage[]) =>
+  messages.filter((message) => message.role === "user").length;
 
-export const getUserMessages = (messages: ChatMessage[]) => {
-  return messages.filter((message) => message.role === "user");
-};
-
-export const getAssistantMessages = (messages: ChatMessage[]) => {
-  return messages.filter((message) => message.role === "assistant");
-};
-
-export const getLastUserMessage = (messages: ChatMessage[]) => {
-  const userMessages = getUserMessages(messages);
-  return userMessages[userMessages.length - 1];
-};
+export const getLastUserMessage = (messages: ChatMessage[]) =>
+  [...messages].reverse().find((message) => message.role === "user");
