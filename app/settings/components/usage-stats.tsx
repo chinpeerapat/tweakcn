@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Select,
@@ -10,13 +11,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getMyUsageStats, getMyUsageChartData } from "@/actions/ai-usage";
+import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 type Timeframe = "1d" | "7d" | "30d";
 
-interface UsageStats {
+interface UsageSummary {
   requests: number;
   timeframe: Timeframe;
 }
@@ -26,6 +26,11 @@ interface ChartDataPoint {
   hoursSinceEpoch?: number;
   date: string;
   totalRequests: number;
+}
+
+interface UsageMetricsResponse {
+  stats: UsageSummary;
+  chartData: ChartDataPoint[];
 }
 
 const timeframeLabels = {
@@ -43,32 +48,63 @@ const chartConfig = {
 
 export function UsageStats() {
   const [timeframe, setTimeframe] = useState<Timeframe>("7d");
-  const [stats, setStats] = useState<UsageStats | null>(null);
+  const [stats, setStats] = useState<UsageSummary | null>(null);
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
       setLoading(true);
+      setError(null);
+
       try {
-        const [statsData, chartDataResponse] = await Promise.all([
-          getMyUsageStats(timeframe),
-          getMyUsageChartData(timeframe),
-        ]);
-        setStats(statsData);
-        setChartData(chartDataResponse);
-      } catch (error) {
-        console.error("Error fetching usage data:", error);
+        const response = await fetch(`/api/usage?timeframe=${timeframe}`, {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = (await response.json()) as UsageMetricsResponse;
+
+        if (!isMounted) {
+          return;
+        }
+
+        setStats(data.stats);
+        setChartData(data.chartData);
+      } catch (fetchError) {
+        console.error("Error fetching usage data:", fetchError);
+        if (!isMounted) {
+          return;
+        }
+        setStats(null);
+        setChartData([]);
+        setError("Unable to load usage metrics. Please try again later.");
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [timeframe]);
 
   const formatDate = (dateString: string, timeframe: Timeframe) => {
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) {
+      return dateString;
+    }
     if (timeframe === "1d") {
       return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     }
@@ -78,7 +114,7 @@ export function UsageStats() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-end">
-        <Select value={timeframe} onValueChange={(value: Timeframe) => setTimeframe(value)}>
+        <Select value={timeframe} onValueChange={(value) => setTimeframe(value as Timeframe)}>
           <SelectTrigger className="w-[160px]">
             <SelectValue />
           </SelectTrigger>
@@ -97,9 +133,14 @@ export function UsageStats() {
               <Skeleton className="h-8 w-24" />
               <Skeleton className="h-4 w-48" />
             </div>
+          ) : error ? (
+            <div className="space-y-1">
+              <p className="text-destructive text-sm font-medium">Unable to load usage data</p>
+              <p className="text-muted-foreground text-xs">Please try again in a moment.</p>
+            </div>
           ) : (
             <div className="space-y-1">
-              <div className="text-3xl font-bold tracking-tight">{stats?.requests || 0}</div>
+              <div className="text-3xl font-bold tracking-tight">{stats?.requests ?? 0}</div>
               <p className="text-muted-foreground text-sm">
                 requests in {timeframeLabels[timeframe].toLowerCase()}
               </p>
@@ -116,6 +157,15 @@ export function UsageStats() {
                 <Skeleton className="h-4 w-12" />
               </div>
               <Skeleton className="h-[200px] w-full rounded-md" />
+            </div>
+          ) : error ? (
+            <div className="flex h-[200px] items-center justify-center">
+              <div className="text-center text-sm text-destructive">
+                <p>We couldn&apos;t load your usage metrics.</p>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  Refresh the page or try again later.
+                </p>
+              </div>
             </div>
           ) : chartData.length > 0 ? (
             <ChartContainer config={chartConfig} className="h-[200px] w-full">
