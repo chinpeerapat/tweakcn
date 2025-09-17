@@ -29,11 +29,17 @@ const THEME_INITIALIZER = `(() => {
   let prefersDark = false;
 
   try {
-    prefersDark = typeof window.matchMedia === "function"
-      ? window.matchMedia(preferDarkQuery).matches
-      : false;
+    if (typeof window.matchMedia === "function") {
+      prefersDark = window.matchMedia(preferDarkQuery).matches;
+    } else {
+      // Fallback to the app's default theme when matchMedia is unavailable
+      apply("dark");
+      return;
+    }
   } catch {
-    prefersDark = false;
+    // If querying matchMedia fails, fallback to the app's default theme
+    apply("dark");
+    return;
   }
 
   apply(prefersDark ? "dark" : "light");
