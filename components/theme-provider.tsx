@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 
 type Theme = "dark" | "light";
 
@@ -17,7 +23,7 @@ type ThemeProviderState = {
   toggleTheme: (coords?: Coords) => void;
 };
 
-const STORAGE_KEY = "tweak-ai-theme";
+export const THEME_STORAGE_KEY = "tweak-ai-theme";
 
 const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined);
 
@@ -32,6 +38,38 @@ function applyTheme(theme: Theme) {
   root.style.colorScheme = theme;
 }
 
+function getStoredTheme(): Theme | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const storedTheme = window.localStorage.getItem(
+      THEME_STORAGE_KEY,
+    ) as Theme | null;
+
+    if (storedTheme === "light" || storedTheme === "dark") {
+      return storedTheme;
+    }
+  } catch {
+    // no-op if storage is unavailable
+  }
+
+  return null;
+}
+
+function setStoredTheme(theme: Theme) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // ignore storage errors (e.g. privacy mode)
+  }
+}
+
 export function ThemeProvider({ children, defaultTheme = "light" }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(defaultTheme);
 
@@ -40,23 +78,24 @@ export function ThemeProvider({ children, defaultTheme = "light" }: ThemeProvide
       return;
     }
 
-    const storedTheme = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (storedTheme === "light" || storedTheme === "dark") {
+    const storedTheme = getStoredTheme();
+    if (storedTheme) {
       setThemeState(storedTheme);
       return;
     }
 
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setThemeState(prefersDark ? "dark" : defaultTheme);
-  }, [defaultTheme]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof window.matchMedia === "function") {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setThemeState(prefersDark ? "dark" : "light");
       return;
     }
 
+    setThemeState(defaultTheme);
+  }, [defaultTheme]);
+
+  useLayoutEffect(() => {
     applyTheme(theme);
-    window.localStorage.setItem(STORAGE_KEY, theme);
+    setStoredTheme(theme);
   }, [theme]);
 
   const handleSetTheme = (newTheme: Theme) => {
