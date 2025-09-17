@@ -8,13 +8,24 @@ function safeParseDate(value: string | Date | null | undefined): Date | null {
   return new Date(value);
 }
 
-if (!process.env.POLAR_WEBHOOK_SECRET) {
-  throw new Error("POLAR_WEBHOOK_SECRET environment variable is required");
+const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
+
+if (!webhookSecret && process.env.NODE_ENV !== "production") {
+  console.warn(
+    "POLAR_WEBHOOK_SECRET is not configured. Subscription webhooks will respond with 503 until the secret is provided."
+  );
 }
 
-export const POST = Webhooks({
-  webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
-  onPayload: async ({ data, type }) => {
+const disabledResponse = async () =>
+  new Response("Polar webhook secret not configured", {
+    status: 503,
+    headers: { "Cache-Control": "no-store" },
+  });
+
+const activeWebhook = webhookSecret
+  ? Webhooks({
+      webhookSecret,
+      onPayload: async ({ data, type }) => {
     if (
       type === "subscription.created" ||
       type === "subscription.active" ||
@@ -96,5 +107,8 @@ export const POST = Webhooks({
         console.error("❌ Error processing subscription webhook:", error);
       }
     }
-  },
-});
+      },
+    })
+  : null;
+
+export const POST = activeWebhook ?? disabledResponse;

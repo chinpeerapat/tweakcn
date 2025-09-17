@@ -1,17 +1,7 @@
-import React from "react";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
-
 interface LegalLayoutProps {
   children: React.ReactNode;
 }
 
 export default function LegalLayout({ children }: LegalLayoutProps) {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </div>
-  );
+  return <div className="container mx-auto max-w-3xl px-4 py-16 md:px-6">{children}</div>;
 }

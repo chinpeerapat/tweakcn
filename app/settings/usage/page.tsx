@@ -9,11 +9,14 @@ export default async function UsagePage() {
     headers: await headers(),
   });
 
-  if (!session) redirect("/editor/theme");
+  if (!session) redirect("/dashboard");
 
   return (
-    <div>
-      <SettingsHeader title="AI Usage" description="Track your AI theme generation requests" />
+    <div className="space-y-6">
+      <SettingsHeader
+        title="Usage analytics"
+        description="Track request volume across the last day, week, or month to understand adoption."
+      />
       <UsageStats />
     </div>
   );

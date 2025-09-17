@@ -7,7 +7,7 @@ export default async function SettingsIndex() {
     headers: await headers(),
   });
 
-  if (!session) redirect("/editor/theme");
+  if (!session) redirect("/dashboard");
 
-  redirect("/settings/themes");
+  redirect("/settings/account");
 }

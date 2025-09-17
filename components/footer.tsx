@@ -1,99 +1,55 @@
 import Link from "next/link";
 import Logo from "@/assets/logo.svg";
-import GitHubIcon from "@/assets/github.svg";
-import TwitterIcon from "@/assets/twitter.svg";
-import DiscordIcon from "@/assets/discord.svg";
 
 export function Footer() {
   return (
-    <footer className="bg-background/95 w-full border-t backdrop-blur-sm">
+    <footer className="border-t bg-background/95 backdrop-blur">
       <div className="container mx-auto flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16">
-        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
-          <div className="col-span-2 max-w-md space-y-4">
-            <Link href="/" className="flex items-center gap-2 font-bold">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="col-span-2 space-y-3">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
               <Logo className="size-6" />
-              <span>tweakcn</span>
+              <span>Tweak AI</span>
             </Link>
             <p className="text-muted-foreground text-sm">
-              A powerful visual theme editor for shadcn/ui components with Tailwind CSS support.
-              Make your components stand out.
+              Launch faster with a production-ready AI SaaS starter. Authentication, billing, usage metering, and an AI copilot
+              come configured out of the box.
             </p>
-            <div className="flex gap-4">
-              <a
-                href="https://github.com/jnsahaj/tweakcn"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <GitHubIcon className="size-5" />
-                <span className="sr-only">GitHub</span>
-              </a>
-              <a
-                href="https://discord.gg/Phs4u2NM3n"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <DiscordIcon className="size-5" />
-                <span className="sr-only">Discord</span>
-              </a>
-              <a
-                href="https://x.com/iamsahaj_xyz"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <TwitterIcon className="size-5" />
-                <span className="sr-only">Twitter</span>
-              </a>
-            </div>
           </div>
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold">Product</h4>
-            <ul className="space-y-2 text-sm">
+
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold">Product</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a
-                  href="#features"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Features
-                </a>
+                <Link href="/ai" className="hover:text-foreground transition-colors">
+                  AI Studio
+                </Link>
               </li>
               <li>
-                <a
-                  href="#examples"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Examples
-                </a>
+                <Link href="/dashboard" className="hover:text-foreground transition-colors">
+                  Usage Dashboard
+                </Link>
               </li>
               <li>
-                <a
-                  href="#roadmap"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Roadmap
-                </a>
+                <Link href="/pricing" className="hover:text-foreground transition-colors">
+                  Pricing
+                </Link>
               </li>
             </ul>
           </div>
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold">Resources</h4>
-            <ul className="space-y-2 text-sm">
+
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold">Company</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a
-                  href="https://github.com/jnsahaj/tweakcn"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  GitHub
-                </a>
+                <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
+                  Privacy Policy
+                </Link>
               </li>
               <li>
                 <a
-                  href="https://discord.gg/Phs4u2NM3n"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Discord
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://x.com/messages/compose?recipient_id=1426676644152889345"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  href="mailto:hello@tweakai.dev"
+                  className="hover:text-foreground transition-colors"
                 >
                   Contact
                 </a>
@@ -102,13 +58,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-border/40 flex flex-col items-center justify-between gap-4 border-t pt-8 sm:flex-row">
-          <p className="text-muted-foreground text-xs">
-            &copy; {new Date().getFullYear()} tweakcn. All rights reserved.
-          </p>
-          <p className="text-muted-foreground text-xs">
-            <Link href="/privacy-policy">Privacy Policy</Link>
-          </p>
+        <div className="flex flex-col gap-4 border-t border-border/50 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>&copy; {new Date().getFullYear()} Tweak AI. All rights reserved.</p>
+          <p className="text-xs">Built for founders shipping AI-first products.</p>
         </div>
       </div>
     </footer>

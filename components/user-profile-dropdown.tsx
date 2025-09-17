@@ -109,7 +109,7 @@ export function UserProfileDropdown() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-border opacity-80" />
               <DropdownMenuItem asChild>
-                <Link href="/settings">
+                <Link href="/settings/account">
                   <Settings /> Settings
                 </Link>
               </DropdownMenuItem>
