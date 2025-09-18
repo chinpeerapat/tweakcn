@@ -1,6 +1,102 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  --background: oklch(0.9846 0.0017 247.8394);
+  --foreground: oklch(0.2101 0.0318 264.6645);
+  --card: oklch(1.0000 0 0);
+  --card-foreground: oklch(0.2101 0.0318 264.6645);
+  --popover: oklch(1.0000 0 0);
+  --popover-foreground: oklch(0.2101 0.0318 264.6645);
+  --primary: oklch(0.2781 0.0296 256.8480);
+  --primary-foreground: oklch(0.9846 0.0017 247.8394);
+  --secondary: oklch(0.9276 0.0058 264.5313);
+  --secondary-foreground: oklch(0.2781 0.0296 256.8480);
+  --muted: oklch(0.9670 0.0029 264.5420);
+  --muted-foreground: oklch(0.5510 0.0234 264.3637);
+  --accent: oklch(0.9276 0.0058 264.5313);
+  --accent-foreground: oklch(0.2781 0.0296 256.8480);
+  --destructive: oklch(0.6368 0.2078 25.3313);
+  --destructive-foreground: oklch(0.9846 0.0017 247.8394);
+  --border: oklch(0.9276 0.0058 264.5313);
+  --input: oklch(0.9276 0.0058 264.5313);
+  --ring: oklch(0.2781 0.0296 256.8480);
+  --chart-1: oklch(0.2781 0.0296 256.8480);
+  --chart-2: oklch(0.4461 0.0263 256.8018);
+  --chart-3: oklch(0.5510 0.0234 264.3637);
+  --chart-4: oklch(0.7137 0.0192 261.3247);
+  --chart-5: oklch(0.8717 0.0093 258.3383);
+  --sidebar: oklch(1.0000 0 0);
+  --sidebar-foreground: oklch(0.2101 0.0318 264.6645);
+  --sidebar-primary: oklch(0.2781 0.0296 256.8480);
+  --sidebar-primary-foreground: oklch(0.9846 0.0017 247.8394);
+  --sidebar-accent: oklch(0.9670 0.0029 264.5420);
+  --sidebar-accent-foreground: oklch(0.2101 0.0318 264.6645);
+  --sidebar-border: oklch(0.9276 0.0058 264.5313);
+  --sidebar-ring: oklch(0.2781 0.0296 256.8480);
+  --font-sans: DM Sans, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: serif;
+  --font-mono: Fira Mono, ui-monospace, monospace;
+  --radius: 0.3rem;
+  --shadow-2xs: 0px 4px 8px -2px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0px 4px 8px -2px hsl(0 0% 0% / 0.05);
+  --shadow-sm: 0px 4px 8px -2px hsl(0 0% 0% / 0.10), 0px 1px 2px -3px hsl(0 0% 0% / 0.10);
+  --shadow: 0px 4px 8px -2px hsl(0 0% 0% / 0.10), 0px 1px 2px -3px hsl(0 0% 0% / 0.10);
+  --shadow-md: 0px 4px 8px -2px hsl(0 0% 0% / 0.10), 0px 2px 4px -3px hsl(0 0% 0% / 0.10);
+  --shadow-lg: 0px 4px 8px -2px hsl(0 0% 0% / 0.10), 0px 4px 6px -3px hsl(0 0% 0% / 0.10);
+  --shadow-xl: 0px 4px 8px -2px hsl(0 0% 0% / 0.10), 0px 8px 10px -3px hsl(0 0% 0% / 0.10);
+  --shadow-2xl: 0px 4px 8px -2px hsl(0 0% 0% / 0.25);
+  --tracking-normal: 0px;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: oklch(0.1820 0.0044 264.4592);
+  --foreground: oklch(0.9538 0.0080 73.7430);
+  --card: oklch(0.2223 0.0060 271.1393);
+  --card-foreground: oklch(0.9538 0.0080 73.7430);
+  --popover: oklch(0.2223 0.0060 271.1393);
+  --popover-foreground: oklch(0.9538 0.0080 73.7430);
+  --primary: oklch(0.9538 0.0080 73.7430);
+  --primary-foreground: oklch(0.1820 0.0044 264.4592);
+  --secondary: oklch(0.2723 0.0079 264.4348);
+  --secondary-foreground: oklch(0.9538 0.0080 73.7430);
+  --muted: oklch(0.2723 0.0079 264.4348);
+  --muted-foreground: oklch(0.7118 0.0129 286.0665);
+  --accent: oklch(0.3440 0.0112 264.4169);
+  --accent-foreground: oklch(0.9538 0.0080 73.7430);
+  --destructive: oklch(0.3958 0.1331 25.7230);
+  --destructive-foreground: oklch(0.9538 0.0080 73.7430);
+  --border: oklch(0.2723 0.0079 264.4348);
+  --input: oklch(0.2723 0.0079 264.4348);
+  --ring: oklch(0.9538 0.0080 73.7430);
+  --chart-1: oklch(0.9538 0.0080 73.7430);
+  --chart-2: oklch(0.7118 0.0129 286.0665);
+  --chart-3: oklch(0.5517 0.0138 285.9384);
+  --chart-4: oklch(0.4419 0.0146 285.7864);
+  --chart-5: oklch(0.3703 0.0119 285.8054);
+  --sidebar: oklch(0.1820 0.0044 264.4592);
+  --sidebar-foreground: oklch(0.9538 0.0080 73.7430);
+  --sidebar-primary: oklch(0.9538 0.0080 73.7430);
+  --sidebar-primary-foreground: oklch(0.1820 0.0044 264.4592);
+  --sidebar-accent: oklch(0.2723 0.0079 264.4348);
+  --sidebar-accent-foreground: oklch(0.9538 0.0080 73.7430);
+  --sidebar-border: oklch(0.2723 0.0079 264.4348);
+  --sidebar-ring: oklch(0.9538 0.0080 73.7430);
+  --font-sans: DM Sans, ui-sans-serif, sans-serif, system-ui;
+  --font-serif: serif;
+  --font-mono: Fira Mono, ui-monospace, monospace;
+  --radius: 0.3rem;
+  --shadow-2xs: 0px 8px 16px -4px hsl(0 0% 0% / 0.20);
+  --shadow-xs: 0px 8px 16px -4px hsl(0 0% 0% / 0.20);
+  --shadow-sm: 0px 8px 16px -4px hsl(0 0% 0% / 0.40), 0px 1px 2px -5px hsl(0 0% 0% / 0.40);
+  --shadow: 0px 8px 16px -4px hsl(0 0% 0% / 0.40), 0px 1px 2px -5px hsl(0 0% 0% / 0.40);
+  --shadow-md: 0px 8px 16px -4px hsl(0 0% 0% / 0.40), 0px 2px 4px -5px hsl(0 0% 0% / 0.40);
+  --shadow-lg: 0px 8px 16px -4px hsl(0 0% 0% / 0.40), 0px 4px 6px -5px hsl(0 0% 0% / 0.40);
+  --shadow-xl: 0px 8px 16px -4px hsl(0 0% 0% / 0.40), 0px 8px 10px -5px hsl(0 0% 0% / 0.40);
+  --shadow-2xl: 0px 8px 16px -4px hsl(0 0% 0% / 1.00);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -44,7 +140,6 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* Computed Shadow Variants */
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
@@ -54,12 +149,12 @@
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
 
-  --tracking-tighter: calc(var(--letter-spacing) - 0.05em);
-  --tracking-tight: calc(var(--letter-spacing) - 0.025em);
-  --tracking-normal: var(--letter-spacing);
-  --tracking-wide: calc(var(--letter-spacing) + 0.025em);
-  --tracking-wider: calc(var(--letter-spacing) + 0.05em);
-  --tracking-widest: calc(var(--letter-spacing) + 0.1em);
+  --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+  --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+  --tracking-normal: var(--tracking-normal);
+  --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+  --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+  --tracking-widest: calc(var(--tracking-normal) + 0.1em);
 }
 
 * {
@@ -71,7 +166,7 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   -webkit-font-smoothing: antialiased;
-  letter-spacing: var(--letter-spacing);
+  letter-spacing: var(--tracking-normal);
 }
 
 @layer base {
