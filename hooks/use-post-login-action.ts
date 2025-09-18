@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 
-export type PostLoginActionType = "CHECKOUT";
+export type PostLoginActionType = "CHECKOUT" | "REDIRECT";
+
+export interface RedirectPostLoginActionData {
+  path?: string;
+}
 
 export interface PostLoginActionPayload<T = any> {
   type: PostLoginActionType;

@@ -5,6 +5,8 @@ import { AI_REQUEST_FREE_TIER_LIMIT } from "@/lib/constants";
 import { BarChart3, CreditCard, Lock, ShieldCheck, Sparkles } from "lucide-react";
 import Link from "next/link";
 
+import { ProtectedLink } from "@/components/protected-link";
+
 const featureHighlights = [
   {
     title: "AI copilot included",
@@ -54,7 +56,9 @@ export default function HomePage() {
               <Link href="/ai">Open AI Studio</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/dashboard">View dashboard</Link>
+              <ProtectedLink href="/dashboard" requireAuth>
+                View dashboard
+              </ProtectedLink>
             </Button>
           </div>
         </section>

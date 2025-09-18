@@ -3,6 +3,7 @@
 import Logo from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ProtectedLink } from "@/components/protected-link";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -13,7 +14,7 @@ const navigationLinks = [
   { href: "/#features", label: "Features" },
   { href: "/ai", label: "AI Studio" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard", label: "Dashboard", requiresAuth: true },
 ];
 
 export function Header() {
@@ -29,9 +30,10 @@ export function Header() {
           </Link>
           <nav aria-label="Main" className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
             {navigationLinks.map((link) => (
-              <Link
+              <ProtectedLink
                 key={link.href}
                 href={link.href}
+                requireAuth={link.requiresAuth}
                 aria-current={pathname === link.href ? "page" : undefined}
                 className={
                   pathname === link.href
@@ -40,7 +42,7 @@ export function Header() {
                 }
               >
                 {link.label}
-              </Link>
+              </ProtectedLink>
             ))}
           </nav>
         </div>
