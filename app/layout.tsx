@@ -2,6 +2,7 @@ import { AuthDialogWrapper } from "@/components/auth-dialog-wrapper";
 import { Footer } from "@/components/footer";
 import { GetProDialogWrapper } from "@/components/get-pro-dialog-wrapper";
 import { Header } from "@/components/header";
+import { ThemeScript } from "@/components/theme-script";
 import { PostHogInit } from "@/components/posthog-init";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -44,8 +45,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-background font-sans antialiased">
+        <ThemeScript />
         <NuqsAdapter>
           <Suspense>
             <QueryProvider>
@@ -53,9 +55,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <TooltipProvider>
                   <AuthDialogWrapper />
                   <GetProDialogWrapper />
-                  <Header />
-                  <main className="flex min-h-svh flex-col">{children}</main>
-                  <Footer />
+                  <div className="flex min-h-svh flex-col">
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                  </div>
                   <Toaster />
                 </TooltipProvider>
               </ThemeProvider>
