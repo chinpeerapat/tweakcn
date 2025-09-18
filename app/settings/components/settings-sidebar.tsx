@@ -50,7 +50,7 @@ export function SettingsSidebar() {
 
   return (
     <aside className="w-full max-w-xs shrink-0">
-      <nav className="space-y-1">
+      <nav aria-label="Settings" className="space-y-1">
         {navItems.map((item) => {
           if (item.type === "separator") {
             return <Separator key={item.id} className="my-2" />;
@@ -65,6 +65,7 @@ export function SettingsSidebar() {
                 "hover:bg-muted flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 isActive && "bg-muted"
               )}
+              aria-current={isActive ? "page" : undefined}
             >
               {item.icon && <item.icon className="size-4" />}
               {item.label}

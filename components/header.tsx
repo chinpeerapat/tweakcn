@@ -27,12 +27,17 @@ export function Header() {
             <Logo className="size-6" />
             <span className="hidden sm:inline">Tweak AI</span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+          <nav aria-label="Main" className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
             {navigationLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={pathname === link.href ? "text-foreground" : "hover:text-foreground transition-colors"}
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={
+                  pathname === link.href
+                    ? "text-foreground"
+                    : "hover:text-foreground transition-colors"
+                }
               >
                 {link.label}
               </Link>

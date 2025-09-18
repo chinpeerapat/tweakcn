@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useGuards } from "@/hooks/use-guards";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useToast } from "@/hooks/use-toast";
@@ -37,6 +38,11 @@ export function ChatPanel() {
   const [isPending, startTransition] = useTransition();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const inputId = useId();
+  const helperTextId = useId();
+  const messageLogId = useId();
+  const messageLogLabelId = useId();
+  const usageBadgeId = useId();
 
   useEffect(() => {
     if (messages.length === 0) {
@@ -125,6 +131,7 @@ export function ChatPanel() {
             </p>
           </div>
           <UsageBadge
+            id={usageBadgeId}
             isSubscribed={isSubscribed ?? false}
             requestsRemaining={requestsRemaining}
             isSubmitting={isSubmitting || isPending}
@@ -132,8 +139,17 @@ export function ChatPanel() {
         </div>
       </CardHeader>
       <CardContent className="flex min-h-[400px] flex-1 flex-col gap-4 overflow-hidden p-0">
-        <ScrollArea className="flex-1 px-6 py-4">
-          <div className="flex flex-col gap-4">
+        <ScrollArea className="flex-1 px-6 py-4" aria-labelledby={messageLogLabelId}>
+          <p id={messageLogLabelId} className="sr-only">
+            Conversation history
+          </p>
+          <div
+            id={messageLogId}
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+            className="flex flex-col gap-4"
+          >
             {messages.map((message) => (
               <div key={message.id} className="flex flex-col gap-1">
                 <div
@@ -159,14 +175,22 @@ export function ChatPanel() {
       </CardContent>
       <CardFooter className="border-t">
         <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3">
+          <Label htmlFor={inputId} className="sr-only">
+            Send a message to the Insights Copilot
+          </Label>
           <Textarea
+            id={inputId}
             value={input}
             onChange={(event) => setInput(event.target.value)}
             placeholder="Ask about usage trends, billing issues, or what to build next..."
             maxLength={500}
             rows={3}
             disabled={isSubmitting}
+            aria-describedby={`${helperTextId} ${usageBadgeId}`}
           />
+          <span id={helperTextId} className="sr-only">
+            Messages are stored securely and shared with your team.
+          </span>
           <div className="flex items-center justify-between gap-3">
             <span className="text-muted-foreground text-xs">
               We store messages securely so your team can pick up where you left off.
@@ -195,35 +219,42 @@ function UsageBadge({
   isSubscribed,
   requestsRemaining,
   isSubmitting,
+  id,
 }: {
   isSubscribed: boolean;
   requestsRemaining?: number;
   isSubmitting: boolean;
+  id?: string;
 }) {
-  if (isSubscribed) {
-    return (
-      <div className="bg-primary/10 text-primary inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
-        Unlimited responses
-      </div>
-    );
-  }
+  let statusMessage: string;
 
-  if (typeof requestsRemaining !== "number") {
-    return (
-      <div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium">
-        Checking limits…
-      </div>
-    );
+  if (isSubscribed) {
+    statusMessage = "Unlimited responses";
+  } else if (typeof requestsRemaining !== "number") {
+    statusMessage = "Checking limits…";
+  } else if (isSubmitting) {
+    statusMessage = "Recording usage…";
+  } else {
+    statusMessage = `${requestsRemaining} free responses left`;
   }
 
   return (
     <div
+      id={id}
+      role="status"
+      aria-live="polite"
       className={cn(
         "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold",
-        requestsRemaining > 0 ? "bg-amber-100 text-amber-900" : "bg-destructive/10 text-destructive"
+        isSubscribed
+          ? "bg-primary/10 text-primary"
+          : typeof requestsRemaining !== "number"
+            ? "bg-muted text-foreground"
+            : requestsRemaining > 0
+              ? "bg-amber-100 text-amber-900"
+              : "bg-destructive/10 text-destructive"
       )}
     >
-      {isSubmitting ? "Recording usage…" : `${requestsRemaining} free responses left`}
+      {statusMessage}
     </div>
   );
 }
