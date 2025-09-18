@@ -18,8 +18,17 @@ export function ThemeToggle({ className, ...props }: ThemeToggleProps) {
 
   return (
     <TooltipWrapper label="Toggle theme" asChild>
-      <Button className={cn("cursor-pointer", className)} {...props} onClick={handleThemeToggle}>
-        {theme === "light" ? <Sun /> : <Moon />}
+      <Button
+        type="button"
+        aria-label="Toggle color theme"
+        aria-pressed={theme === "dark"}
+        title="Toggle color theme"
+        className={cn("cursor-pointer", className)}
+        {...props}
+        onClick={handleThemeToggle}
+      >
+        <span className="sr-only">{theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}</span>
+        {theme === "light" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
       </Button>
     </TooltipWrapper>
   );

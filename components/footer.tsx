@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Logo from "@/assets/logo.svg";
 
+import { ProtectedLink } from "@/components/protected-link";
+
 export function Footer() {
   return (
     <footer className="border-t bg-background/95 backdrop-blur">
@@ -26,9 +28,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-foreground transition-colors">
+                <ProtectedLink
+                  href="/dashboard"
+                  requireAuth
+                  className="hover:text-foreground transition-colors"
+                >
                   Usage Dashboard
-                </Link>
+                </ProtectedLink>
               </li>
               <li>
                 <Link href="/pricing" className="hover:text-foreground transition-colors">

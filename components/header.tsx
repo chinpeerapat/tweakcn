@@ -3,6 +3,7 @@
 import Logo from "@/assets/logo.svg";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ProtectedLink } from "@/components/protected-link";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -13,7 +14,7 @@ const navigationLinks = [
   { href: "/#features", label: "Features" },
   { href: "/ai", label: "AI Studio" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard", label: "Dashboard", requiresAuth: true },
 ];
 
 export function Header() {
@@ -27,15 +28,21 @@ export function Header() {
             <Logo className="size-6" />
             <span className="hidden sm:inline">Tweak AI</span>
           </Link>
-          <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+          <nav aria-label="Main" className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
             {navigationLinks.map((link) => (
-              <Link
+              <ProtectedLink
                 key={link.href}
                 href={link.href}
-                className={pathname === link.href ? "text-foreground" : "hover:text-foreground transition-colors"}
+                requireAuth={link.requiresAuth}
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={
+                  pathname === link.href
+                    ? "text-foreground"
+                    : "hover:text-foreground transition-colors"
+                }
               >
                 {link.label}
-              </Link>
+              </ProtectedLink>
             ))}
           </nav>
         </div>

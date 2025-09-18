@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Label } from "@/components/ui/label";
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 
 type Timeframe = "1d" | "7d" | "30d";
@@ -52,6 +53,9 @@ export function UsageStats() {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const selectId = useId();
+  const selectDescriptionId = useId();
+  const chartSummaryId = useId();
 
   useEffect(() => {
     let isMounted = true;
@@ -111,22 +115,47 @@ export function UsageStats() {
     return date.toLocaleDateString([], { month: "short", day: "numeric" });
   };
 
+  const accessibleChartSummary = useMemo(() => {
+    if (chartData.length === 0) {
+      return `No usage data available for ${timeframeLabels[timeframe].toLowerCase()}.`;
+    }
+
+    return chartData
+      .map((dataPoint) => {
+        const formattedDate = formatDate(dataPoint.date, timeframe);
+        return `${formattedDate}: ${dataPoint.totalRequests} requests`;
+      })
+      .join(". ");
+  }, [chartData, timeframe]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-end">
-        <Select value={timeframe} onValueChange={(value) => setTimeframe(value as Timeframe)}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1d">Last 24 hours</SelectItem>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-col items-end gap-1">
+          <Label htmlFor={selectId} className="sr-only">
+            Select timeframe for usage analytics
+          </Label>
+          <span id={selectDescriptionId} className="sr-only">
+            Choose a time window to update the usage metrics.
+          </span>
+          <Select value={timeframe} onValueChange={(value) => setTimeframe(value as Timeframe)}>
+            <SelectTrigger id={selectId} aria-describedby={selectDescriptionId} className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1d">Last 24 hours</SelectItem>
+              <SelectItem value="7d">Last 7 days</SelectItem>
+              <SelectItem value="30d">Last 30 days</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <Card>
+      <div id={chartSummaryId} className="sr-only" aria-live="polite">
+        {accessibleChartSummary}
+      </div>
+
+      <Card aria-live="polite">
         <CardHeader className="pb-4">
           {loading ? (
             <div className="space-y-2">
@@ -168,7 +197,13 @@ export function UsageStats() {
               </div>
             </div>
           ) : chartData.length > 0 ? (
-            <ChartContainer config={chartConfig} className="h-[200px] w-full">
+            <ChartContainer
+              role="img"
+              aria-label={`Bar chart showing usage requests over ${timeframeLabels[timeframe].toLowerCase()}`}
+              aria-describedby={chartSummaryId}
+              config={chartConfig}
+              className="h-[200px] w-full"
+            >
               <BarChart data={chartData}>
                 <XAxis
                   dataKey="date"
