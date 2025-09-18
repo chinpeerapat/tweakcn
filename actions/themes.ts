@@ -104,7 +104,7 @@ export async function createTheme(formData: { name: string; styles: ThemeStyles 
       const activeSubscription = await getMyActiveSubscription(userId);
       const isSubscribed =
         !!activeSubscription &&
-        activeSubscription?.productId === process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
+        activeSubscription?.productId === process.env.NEXT_PUBLIC_PRO_PLAN_PRODUCT_ID;
 
       if (!isSubscribed) {
         throw new ThemeLimitError(`You cannot have more than ${MAX_FREE_THEMES} themes.`);

@@ -9,7 +9,7 @@ export const createCheckout = async () => {
     const user = await getCurrentUser();
     const customer = await getOrCreateCustomer(user);
     const checkout = await polar.checkouts.create({
-      products: [process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID!],
+      products: [process.env.NEXT_PUBLIC_PRO_PLAN_PRODUCT_ID!],
       customerId: customer?.id,
       successUrl: `${process.env.BASE_URL}/success?checkout_id={CHECKOUT_ID}`,
     });
