@@ -40,7 +40,7 @@ export function AuthDialog({
   const [name, setName] = useState("");
 
   const getCallbackUrl = () => {
-    const baseUrl = pathname || "/editor/theme";
+    const baseUrl = pathname || "/dashboard";
     const queryString = searchParams.toString();
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   };
@@ -118,7 +118,7 @@ export function AuthDialog({
             <p className="text-muted-foreground text-center">
               {isSignIn
                 ? "Sign in to your account to continue"
-                : "Sign up to get started with tweakcn"}
+                : "Sign up to get started with Tweak AI"}
             </p>
           </ResponsiveDialogHeader>
 
@@ -204,7 +204,7 @@ export function AuthDialog({
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-muted text-muted-foreground px-2">
-                    {isSignIn ? "New to tweakcn?" : "Already have an account?"}
+                    {isSignIn ? "New to Tweak AI?" : "Already have an account?"}
                   </span>
                 </div>
               </div>

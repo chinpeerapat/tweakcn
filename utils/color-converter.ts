@@ -1,6 +1,7 @@
 import * as culori from "culori";
-import { ColorFormat } from "../types";
 import { Hsl } from "culori";
+
+type ColorFormat = "hsl" | "rgb" | "oklch" | "hex";
 
 export const formatNumber = (num?: number) => {
   if (!num) return "0";

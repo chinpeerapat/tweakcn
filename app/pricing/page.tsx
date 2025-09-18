@@ -10,45 +10,42 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { AI_REQUEST_FREE_TIER_LIMIT } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { FREE_SUB_FEATURES, PRO_SUB_FEATURES } from "@/utils/subscription";
-import { Calendar, Check, Circle, Mail } from "lucide-react";
+import { Calendar, Check, Circle, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { CheckoutButton } from "./components/checkout-button";
 import { Metadata } from "next";
-import { Testimonials } from "@/components/home/testimonials";
+
+import { CheckoutButton } from "./components/checkout-button";
 
 export const metadata: Metadata = {
-  title: "Pricing — tweakcn",
-  robots: "index, follow",
+  title: "Pricing — Tweak AI",
+  description: "Choose the plan that lets you ship AI SaaS features with confidence.",
 };
 
 export default function PricingPage() {
   return (
     <div className="from-background via-background to-muted/20 relative isolate min-h-screen bg-gradient-to-br">
-      {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="bg-primary/10 absolute top-0 right-0 size-80 translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
         <div className="bg-secondary/10 absolute bottom-0 left-0 size-80 -translate-x-1/2 translate-y-1/2 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative container mx-auto space-y-28 px-4 py-20 md:px-6">
-        {/* Header Section */}
-        <section className="space-y-2 text-center">
-          <h1 className="from-foreground to-foreground/50 bg-gradient-to-r bg-clip-text text-5xl font-bold tracking-tight text-pretty text-transparent md:text-6xl">
-            Choose your perfect plan
+      <div className="relative container mx-auto space-y-24 px-4 py-20 md:px-6">
+        <section className="space-y-6 text-center">
+          <span className="bg-primary/10 text-primary inline-flex items-center justify-center gap-2 rounded-full px-3 py-1 text-xs font-semibold">
+            <Sparkles className="size-3" /> Launch-ready SaaS
+          </span>
+          <h1 className="bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-6xl">
+            Pricing built for ambitious builders
           </h1>
           <p className="text-muted-foreground mx-auto max-w-3xl text-base text-balance md:text-lg">
-            Start building beautiful themes for free. Upgrade to Pro when you&apos;re ready.
+            Get started for free, validate your product, and upgrade when you need unlimited AI usage and team collaboration.
           </p>
         </section>
 
-        {/* Pricing Cards */}
         <section className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 lg:gap-12">
-          {/* Free Plan */}
           <Card className="group relative flex flex-col overflow-hidden border-2 transition-all duration-300">
             <CardHeader className="space-y-2 border-b">
-              <div className="flex items-center gap-3">
-                <CardTitle className="text-4xl font-medium">Free</CardTitle>
-              </div>
+              <CardTitle className="text-4xl font-medium">Free</CardTitle>
               <div className="flex items-baseline">
                 <span className="text-4xl font-bold tracking-tight lg:text-5xl">$0</span>
                 <span className="text-muted-foreground text-lg">/month</span>
@@ -72,28 +69,19 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button
-                asChild
-                variant="outline"
-                className="hover:bg-muted/50 h-12 w-full text-base font-medium transition-all duration-200"
-                size="lg"
-              >
-                <Link href="/editor/theme">Get Started Free</Link>
+              <Button asChild variant="outline" className="h-12 w-full text-base font-medium" size="lg">
+                <Link href="/ai">Launch AI Studio</Link>
               </Button>
             </CardFooter>
           </Card>
 
-          {/* Pro Plan */}
           <Card className="group ring-primary/50 from-card to-primary/5 relative border-2 bg-gradient-to-b ring-2 transition-all duration-300">
             <div className="relative flex h-full flex-col">
               <CardHeader className="relative space-y-2 border-b">
                 <NoiseEffect />
-
-                <div className="flex items-center gap-3">
-                  <CardTitle className="text-4xl font-medium">Pro</CardTitle>
-                </div>
+                <CardTitle className="text-4xl font-medium">Pro</CardTitle>
                 <div className="flex items-baseline">
-                  <span className="text-4xl font-bold tracking-tight lg:text-5xl">$8</span>
+                  <span className="text-4xl font-bold tracking-tight lg:text-5xl">$12</span>
                   <span className="text-muted-foreground text-lg">/month</span>
                 </div>
                 <p className="text-muted-foreground text-sm">Billed monthly • Cancel anytime</p>
@@ -136,32 +124,19 @@ export default function PricingPage() {
           </Card>
         </section>
 
-        <div className="-mt-8">
-          <Testimonials />
-        </div>
-
-        {/* FAQs Section */}
         <section className="mx-auto max-w-3xl space-y-8">
           <div className="space-y-2 text-center">
-            <h2 className="from-foreground to-foreground/80 bg-gradient-to-r bg-clip-text text-3xl font-bold tracking-tight text-transparent md:text-4xl">
+            <h2 className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-3xl font-bold tracking-tight text-transparent md:text-4xl">
               FAQs
             </h2>
             <p className="text-muted-foreground mx-auto max-w-2xl text-base text-balance md:text-lg">
-              Here&apos;s everything you may want to know. For any other info, just{" "}
-              <Link href="mailto:sahaj@tweakcn.com" className="text-primary hover:underline">
-                reach us
-              </Link>
-              .
+              Everything you need to know about limits, billing, and collaboration.
             </p>
           </div>
 
           <Accordion type="single" collapsible className="w-full">
             {PRICING_FAQS.map((faq, i) => (
-              <AccordionItem
-                key={i}
-                value={`item-${i}`}
-                className="border-border/40 group border-b py-2"
-              >
+              <AccordionItem key={i} value={`item-${i}`} className="border-border/40 group border-b py-2">
                 <AccordionTrigger className="group-hover:text-primary text-left font-medium transition-colors hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
@@ -170,20 +145,6 @@ export default function PricingPage() {
             ))}
           </Accordion>
         </section>
-        {/* Bottom Section */}
-        <div className="text-center">
-          <div className="mx-auto max-w-2xl space-y-2">
-            <p className="text-muted-foreground text-pretty">
-              Need something custom or have questions?
-            </p>
-            <Link href="mailto:sahaj@tweakcn.com">
-              <Button variant="link">
-                <Mail className="size-4" />
-                Get in touch
-              </Button>
-            </Link>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -192,29 +153,20 @@ export default function PricingPage() {
 const PRICING_FAQS = [
   {
     question: "What do I get when I upgrade to Pro?",
-    answer: `You get unlimited AI-generated themes, AI theme generation from images, unlimited saved themes, priority support, and more features coming soon. We're developing new features for Pro users!`,
-  },
-  {
-    question: "Can I still use tweakcn for free?",
-    answer: `Yes! tweakcn provides a comprehensive free tier that includes theme customization, access to preset themes, and up to ${AI_REQUEST_FREE_TIER_LIMIT} free AI-generated themes. You can build and export themes without any payment required.`,
-  },
-  {
-    question: "Does tweakcn offer a free trial for the Pro plan?",
-    answer: `No, there are no free trials. However, you get access to generate up to ${AI_REQUEST_FREE_TIER_LIMIT} themes with AI, plus unlimited manual theme customization using the free visual editor.`,
-  },
-  {
-    question: "What happens to saved themes when downgrading to free?",
     answer:
-      "All your created themes remain yours forever. When you downgrade from Pro, you keep full access to all themes you've built, but you'll be limited to the free tier's AI generation quota and features.",
+      "Pro unlocks unlimited AI responses, team collaboration spaces, exportable analytics, and priority support so you can move quickly with your customers.",
   },
   {
-    question: "Can I cancel or switch at any time?",
-    answer:
-      "Yes! You have complete control over your subscription. Cancel anytime through your account settings, and you'll retain Pro access until your current billing period ends before automatically switching to the free tier.",
+    question: "Can I stay on the free plan?",
+    answer: `Yes. The free tier includes authentication, billing integration, and ${AI_REQUEST_FREE_TIER_LIMIT} AI responses per month so you can validate your product before upgrading.`,
   },
   {
-    question: "How secure is the payment?",
+    question: "Do I need my own API keys?",
     answer:
-      "We use Polar for secure payment processing, which handles all transactions with industry-standard encryption. Your payment details are never stored on our servers.",
+      "Bring your own keys for production workloads. Local development works out of the box with your environment secrets.",
+  },
+  {
+    question: "Can I cancel anytime?",
+    answer: "Absolutely. Manage your subscription directly inside the billing portal — no hidden fees or lock-in.",
   },
 ];

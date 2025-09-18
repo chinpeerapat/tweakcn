@@ -3,7 +3,7 @@
 import { Separator } from "@/components/ui/separator";
 import { useSubscription } from "@/hooks/use-subscription";
 import { cn } from "@/lib/utils";
-import { ChartNoAxesCombined, CreditCard, ExternalLink, LucideIcon, Palette } from "lucide-react";
+import { BarChart3, CreditCard, LucideIcon, Shield } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
@@ -22,8 +22,8 @@ type NavItem =
     };
 
 const BASE_NAV_ITEMS: NavItem[] = [
-  { type: "link", href: "/settings/themes", label: "Themes", icon: Palette },
-  { type: "link", href: "/settings/usage", label: "AI Usage", icon: ChartNoAxesCombined },
+  { type: "link", href: "/settings/account", label: "Account", icon: Shield },
+  { type: "link", href: "/settings/usage", label: "Usage", icon: BarChart3 },
 ];
 
 const getSubscriptionNavItems = (): NavItem[] => [
@@ -49,7 +49,7 @@ export function SettingsSidebar() {
   }, [subscriptionStatus?.isSubscribed]);
 
   return (
-    <aside className="w-64 shrink-0">
+    <aside className="w-full max-w-xs shrink-0">
       <nav className="space-y-1">
         {navItems.map((item) => {
           if (item.type === "separator") {
@@ -68,7 +68,7 @@ export function SettingsSidebar() {
             >
               {item.icon && <item.icon className="size-4" />}
               {item.label}
-              {item.isExternal && <ExternalLink className="ml-auto size-4" />}
+              {item.isExternal && <span className="ml-auto text-xs">↗</span>}
             </Link>
           );
         })}
