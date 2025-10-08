@@ -1,34 +1,46 @@
 "use client";
 
+import { Loader } from "@/components/loader";
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
 import { Button } from "@/components/ui/button";
 import { useAIChatForm } from "@/hooks/use-ai-chat-form";
-import { useAIThemeGenerationCore } from "@/hooks/use-ai-theme-generation-core";
+import { useAIEnhancePrompt } from "@/hooks/use-ai-enhance-prompt";
+import { useChatContext } from "@/hooks/use-chat-context";
 import { useGuards } from "@/hooks/use-guards";
+import { useSubscription } from "@/hooks/use-subscription";
 import { usePostLoginAction } from "@/hooks/use-post-login-action";
 import { MAX_IMAGE_FILES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useAIChatStore } from "@/store/ai-chat-store";
 import { AIPromptData } from "@/types/ai";
-import { ArrowUp, Loader, Plus, StopCircle } from "lucide-react";
+import { ArrowUp, Loader as LoaderIcon, Plus, StopCircle } from "lucide-react";
 import { AIChatFormBody } from "./ai-chat-form-body";
-import { AlertBanner } from "./alert-banner";
+import { AlertBanner, BannerWrapper } from "./alert-banner";
+import { EnhancePromptButton } from "./enhance-prompt-button";
 import { ImageUploader } from "./image-uploader";
+
 type ThemeGenerationPayload = {
-  promptData: AIPromptData | null;
+  promptData: AIPromptData;
   options: {
     shouldClearLocalDraft?: boolean;
   };
 };
 
+interface ChatInputProps {
+  onThemeGeneration: (promptData: AIPromptData) => Promise<void>;
+  isGeneratingTheme: boolean;
+  onCancelThemeGeneration: () => void;
+}
+
 export function ChatInput({
-  onGenerateTheme,
-}: {
-  onGenerateTheme: (promptData: AIPromptData | null) => Promise<void>;
-}) {
-  const { messages, clearMessages } = useAIChatStore();
-  const { loading: aiGenerateLoading, cancelThemeGeneration } = useAIThemeGenerationCore();
+  onThemeGeneration,
+  isGeneratingTheme,
+  onCancelThemeGeneration,
+}: ChatInputProps) {
+  const { messages, startNewChat } = useChatContext();
   const { checkValidSession, checkValidSubscription } = useGuards();
+  const { subscriptionStatus } = useSubscription();
+  const isPro = subscriptionStatus?.isSubscribed ?? false;
+  const hasFreeRequestsLeft = (subscriptionStatus?.requestsRemaining ?? 0) > 0;
 
   const {
     editorContentDraft,
@@ -43,12 +55,24 @@ export function ChatInput({
     clearUploadedImages,
     isSomeImageUploading,
     isUserDragging,
+    isInitializing,
   } = useAIChatForm();
 
   const handleNewChat = () => {
-    clearMessages();
+    startNewChat();
     clearLocalDraft();
     clearUploadedImages();
+  };
+
+  const { startEnhance, stopEnhance, enhancedPromptAsJsonContent, isEnhancingPrompt } =
+    useAIEnhancePrompt();
+
+  const handleEnhancePrompt = () => {
+    if (!checkValidSession() || !checkValidSubscription()) return;
+
+    // Only send images that are not loading, and strip loading property
+    const images = uploadedImages.filter((img) => !img.loading).map(({ url }) => ({ url }));
+    startEnhance({ ...promptData, images });
   };
 
   const generateTheme = async (payload: ThemeGenerationPayload) => {
@@ -59,7 +83,7 @@ export function ChatInput({
       clearUploadedImages();
     }
 
-    onGenerateTheme(promptData);
+    onThemeGeneration(promptData);
   };
 
   const handleGenerateSubmit = async () => {
@@ -91,11 +115,25 @@ export function ChatInput({
 
   return (
     <div className="relative transition-all contain-layout">
+      <BannerWrapper show={isGeneratingTheme}>
+        <div className="flex size-full items-center gap-1.5">
+          <LoaderIcon className="size-2.5 animate-spin" />
+          <Loader variant="text-shimmer" text="Generating..." size="sm" />
+        </div>
+      </BannerWrapper>
+
       <AlertBanner />
       <div className="bg-background relative isolate z-10 flex size-full min-h-[100px] flex-1 flex-col gap-2 overflow-hidden rounded-lg border p-2 shadow-xs">
         <AIChatFormBody
           isUserDragging={isUserDragging}
-          aiGenerateLoading={aiGenerateLoading}
+          disabled={isEnhancingPrompt}
+          canSubmit={
+            !isGeneratingTheme &&
+            !isEnhancingPrompt &&
+            !isEmptyPrompt &&
+            !isSomeImageUploading &&
+            !isInitializing
+          }
           uploadedImages={uploadedImages}
           handleImagesUpload={handleImagesUpload}
           handleImageRemove={handleImageRemove}
@@ -103,6 +141,8 @@ export function ChatInput({
           handleGenerate={handleGenerateSubmit}
           initialEditorContent={editorContentDraft ?? undefined}
           textareaKey={editorContentDraft ? "with-draft" : "no-draft"}
+          externalEditorContent={enhancedPromptAsJsonContent}
+          isStreamingContent={isEnhancingPrompt}
         />
         <div className="@container/form flex items-center justify-between gap-2">
           <TooltipWrapper label="Create new chat" asChild>
@@ -110,7 +150,9 @@ export function ChatInput({
               variant="outline"
               size="sm"
               onClick={handleNewChat}
-              disabled={aiGenerateLoading || messages.length === 0}
+              disabled={
+                isGeneratingTheme || isEnhancingPrompt || isInitializing || messages.length === 0
+              }
               className="flex items-center gap-1.5 shadow-none"
             >
               <Plus />
@@ -119,23 +161,34 @@ export function ChatInput({
           </TooltipWrapper>
 
           <div className="flex items-center gap-2">
+            {(isPro || hasFreeRequestsLeft) && promptData?.content ? (
+              <EnhancePromptButton
+                isEnhancing={isEnhancingPrompt}
+                onStart={handleEnhancePrompt}
+                onStop={stopEnhance}
+                disabled={isGeneratingTheme || isInitializing}
+              />
+            ) : null}
+
             <ImageUploader
               fileInputRef={fileInputRef}
               onImagesUpload={handleImagesUpload}
               onClick={() => fileInputRef.current?.click()}
               disabled={
-                aiGenerateLoading ||
+                isGeneratingTheme ||
+                isEnhancingPrompt ||
+                isInitializing ||
                 uploadedImages.some((img) => img.loading) ||
                 uploadedImages.length >= MAX_IMAGE_FILES
               }
             />
 
-            {aiGenerateLoading ? (
+            {isGeneratingTheme ? (
               <TooltipWrapper label="Cancel generation" asChild>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={cancelThemeGeneration}
+                  onClick={onCancelThemeGeneration}
                   className={cn("flex items-center gap-1.5 shadow-none", "@max-[350px]/form:w-8")}
                 >
                   <StopCircle />
@@ -148,9 +201,15 @@ export function ChatInput({
                   size="sm"
                   className="size-8 shadow-none"
                   onClick={handleGenerateSubmit}
-                  disabled={isEmptyPrompt || isSomeImageUploading || aiGenerateLoading}
+                  disabled={
+                    isEmptyPrompt ||
+                    isSomeImageUploading ||
+                    isGeneratingTheme ||
+                    isEnhancingPrompt ||
+                    isInitializing
+                  }
                 >
-                  {aiGenerateLoading ? <Loader className="animate-spin" /> : <ArrowUp />}
+                  {isGeneratingTheme ? <LoaderIcon className="animate-spin" /> : <ArrowUp />}
                 </Button>
               </TooltipWrapper>
             )}

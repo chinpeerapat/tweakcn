@@ -68,6 +68,17 @@ const generateShadowVariables = (shadowMap: Record<string, string>): string => {
   --shadow-2xl: ${shadowMap["shadow-2xl"]};`;
 };
 
+const generateRawShadowVariables = (themeStyles: ThemeStyles, mode: ThemeMode): string => {
+  const styles = themeStyles[mode];
+  return `
+  --shadow-x: ${styles["shadow-offset-x"]};
+  --shadow-y: ${styles["shadow-offset-y"]};
+  --shadow-blur: ${styles["shadow-blur"]};
+  --shadow-spread: ${styles["shadow-spread"]};
+  --shadow-opacity: ${styles["shadow-opacity"]};
+  --shadow-color: ${styles["shadow-color"]};`;
+};
+
 const generateTrackingVariables = (themeStyles: ThemeStyles): string => {
   const styles = themeStyles["light"];
   if (styles["letter-spacing"] === "0em") {
@@ -95,6 +106,7 @@ const generateThemeVariables = (
   const shadowVars = generateShadowVariables(
     getShadowMap({ styles: themeStyles, currentMode: mode })
   );
+  const rawShadowVars = generateRawShadowVariables(themeStyles, mode);
   const spacingVar =
     mode === "light"
       ? `\n  --spacing: ${themeStyles["light"].spacing ?? defaultLightThemeStyles.spacing};`
@@ -111,6 +123,7 @@ const generateThemeVariables = (
     colorVars +
     fontVars +
     radiusVar +
+    rawShadowVars +
     shadowVars +
     trackingVars +
     spacingVar +
