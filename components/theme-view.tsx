@@ -12,14 +12,18 @@ import { useEditorStore } from "@/store/editor-store";
 import type { Theme } from "@/types/theme";
 import { Edit, Moon, MoreVertical, Share, Sun } from "lucide-react";
 import { notFound, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { CodeButton } from "./editor/action-bar/components/code-button";
+import { CodePanelDialog } from "./editor/code-panel-dialog";
 import ThemePreviewPanel from "./editor/theme-preview-panel";
+import { DialogActionsProvider } from "@/hooks/use-dialog-actions";
 
 export default function ThemeView({ theme }: { theme: Theme }) {
   const { themeState, setThemeState, saveThemeCheckpoint, restoreThemeCheckpoint } =
     useEditorStore();
   const router = useRouter();
   const currentMode = themeState.currentMode;
+  const [codePanelOpen, setCodePanelOpen] = useState(false);
 
   useEffect(() => {
     saveThemeCheckpoint();
@@ -68,6 +72,7 @@ export default function ThemeView({ theme }: { theme: Theme }) {
           <Button variant="outline" size="icon" onClick={toggleTheme}>
             {currentMode === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </Button>
+          <CodeButton variant="outline" size="default" onClick={() => setCodePanelOpen(true)} />
           <Button variant="outline" size="default" onClick={handleShare}>
             <Share className="size-4" />
             Share
@@ -91,6 +96,14 @@ export default function ThemeView({ theme }: { theme: Theme }) {
       <div className="-m-4 mt-6 flex h-[min(80svh,900px)] flex-col">
         <ThemePreviewPanel styles={theme.styles} currentMode={currentMode} />
       </div>
+
+      <DialogActionsProvider>
+        <CodePanelDialog
+          open={codePanelOpen}
+          onOpenChange={setCodePanelOpen}
+          themeEditorState={themeState}
+        />
+      </DialogActionsProvider>
     </>
   );
 }
