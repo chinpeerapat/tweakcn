@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 import { db } from "@/db";
-import { theme as themeTable } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { theme as themeTable, communityTheme } from "@/db/schema";
+import { eq, and, sql } from "drizzle-orm";
 import cuid from "cuid";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -13,7 +13,10 @@ import {
   UnauthorizedError,
   ValidationError,
   ThemeNotFoundError,
-  ThemeLimitError,
+  ErrorCode,
+  actionError,
+  actionSuccess,
+  type ActionResult,
 } from "@/types/errors";
 import { MAX_FREE_THEMES } from "@/lib/constants";
 import { getMyActiveSubscription } from "@/lib/subscription";
@@ -61,7 +64,21 @@ const updateThemeSchema = z.object({
 export async function getThemes() {
   try {
     const userId = await getCurrentUserId();
-    const userThemes = await db.select().from(themeTable).where(eq(themeTable.userId, userId));
+    const userThemes = await db
+      .select({
+        id: themeTable.id,
+        userId: themeTable.userId,
+        name: themeTable.name,
+        styles: themeTable.styles,
+        createdAt: themeTable.createdAt,
+        updatedAt: themeTable.updatedAt,
+        isPublished: sql<boolean>`${communityTheme.id} is not null`.as(
+          "is_published"
+        ),
+      })
+      .from(themeTable)
+      .leftJoin(communityTheme, eq(themeTable.id, communityTheme.themeId))
+      .where(eq(themeTable.userId, userId));
     return userThemes;
   } catch (error) {
     logError(error as Error, { action: "getThemes" });
@@ -107,7 +124,10 @@ export async function createTheme(formData: { name: string; styles: ThemeStyles 
         activeSubscription?.productId === process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
 
       if (!isSubscribed) {
-        throw new ThemeLimitError(`You cannot have more than ${MAX_FREE_THEMES} themes.`);
+        return actionError(
+          ErrorCode.THEME_LIMIT_REACHED,
+          `You have reached the limit of ${MAX_FREE_THEMES} themes.`
+        );
       }
     }
 
@@ -127,7 +147,7 @@ export async function createTheme(formData: { name: string; styles: ThemeStyles 
       })
       .returning();
 
-    return insertedTheme;
+    return actionSuccess(insertedTheme);
   } catch (error) {
     logError(error as Error, { action: "createTheme", formData: { name: formData.name } });
     throw error;

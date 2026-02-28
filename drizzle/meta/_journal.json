@@ -15,6 +15,20 @@
       "when": 1752617649128,
       "tag": "0001_late_mikhail_rasputin",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770577489750,
+      "tag": "0002_nebulous_randall",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770585276556,
+      "tag": "0003_bumpy_quasimodo",
+      "breakpoints": true
     }
   ]
 }

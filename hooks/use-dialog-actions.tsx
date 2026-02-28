@@ -3,7 +3,7 @@ import CssImportDialog from "@/components/editor/css-import-dialog";
 import { ShareDialog } from "@/components/editor/share-dialog";
 import { ThemeSaveDialog } from "@/components/editor/theme-save-dialog";
 import { toast } from "@/components/ui/use-toast";
-import { useCreateTheme } from "@/hooks/themes";
+import { useCreateTheme, useUpdateTheme } from "@/hooks/themes";
 import { useAIThemeGenerationCore } from "@/hooks/use-ai-theme-generation-core";
 import { usePostLoginAction } from "@/hooks/use-post-login-action";
 import { authClient } from "@/lib/auth-client";
@@ -45,8 +45,10 @@ interface DialogActionsContextType {
   shareUrl: string;
   dialogKey: number;
   isCreatingTheme: boolean;
+  isUpdatingTheme: boolean;
   isGeneratingTheme: boolean;
   pendingAction: PendingAction;
+  existingThemeName: string | undefined;
 
   // Dialog actions
   setCssImportOpen: (open: boolean) => void;
@@ -58,8 +60,9 @@ interface DialogActionsContextType {
   handleCssImport: (css: string) => void;
   handleSaveClick: (options?: { shareAfterSave?: boolean; openInV0AfterSave?: boolean }) => void;
   handleShareClick: (id?: string) => Promise<void>;
-  handleOpenInV0: (id?: string) => void;
+  handleOpenInV0: (id?: string, name?: string) => void;
   saveTheme: (themeName: string) => Promise<void>;
+  handleUpdateExisting: () => Promise<void>;
 }
 
 function useDialogActionsStore(): DialogActionsContextType {
@@ -71,14 +74,19 @@ function useDialogActionsStore(): DialogActionsContextType {
   const [shareUrl, setShareUrl] = useState("");
   const [dialogKey, _setDialogKey] = useState(0);
 
-  const { themeState, setThemeState, applyThemePreset, hasThemeChangedFromCheckpoint } =
+  const { themeState, setThemeState, applyThemePreset, hasThemeChangedFromCheckpoint, hasUnsavedChanges } =
     useEditorStore();
   const { getPreset } = useThemePresetStore();
   const { data: session } = authClient.useSession();
   const { openAuthDialog } = useAuthStore();
   const createThemeMutation = useCreateTheme();
+  const updateThemeMutation = useUpdateTheme();
   const { isGeneratingTheme } = useAIThemeGenerationCore();
   const posthog = usePostHog();
+
+  const currentPreset = themeState?.preset ? getPreset(themeState.preset) : undefined;
+  const isOnSavedPreset = !!currentPreset && currentPreset.source === "SAVED" && hasUnsavedChanges();
+  const existingThemeName = isOnSavedPreset ? currentPreset.label : undefined;
 
   usePostLoginAction("SAVE_THEME", () => {
     setSaveDialogOpen(true);
@@ -192,13 +200,14 @@ function useDialogActionsStore(): DialogActionsContextType {
   };
 
   // Internal helper to open v0 with a theme
-  const openInV0 = (id?: string) => {
+  const openInV0 = (id?: string, name?: string) => {
     const presetId = id ?? themeState.preset;
     if (!presetId) return;
 
     const currentPreset = getPreset(presetId);
-    const isSavedPreset = !!currentPreset && currentPreset.source === "SAVED";
-    const themeName = currentPreset?.label || presetId;
+    // If an explicit ID is passed but not found in presets, treat as a saved/database theme
+    const isSavedPreset = id ? true : !!currentPreset && currentPreset.source === "SAVED";
+    const themeName = name || currentPreset?.label || presetId;
 
     posthog.capture("OPEN_IN_V0", {
       theme_id: presetId,
@@ -209,18 +218,39 @@ function useDialogActionsStore(): DialogActionsContextType {
     const themeUrl = isSavedPreset
       ? `https://tweakcn.com/r/v0/${presetId}`
       : `https://tweakcn.com/r/v0/${presetId}.json`;
-    const title = `"${themeName}" from tweakcn`;
+    const title = `"${themeName}" from tweakcn`.slice(0, 32);
     const v0Url = `https://v0.dev/chat/api/open?url=${encodeURIComponent(themeUrl)}&title=${encodeURIComponent(title)}`;
     window.open(v0Url, "_blank", "noopener,noreferrer");
   };
 
-  const handleOpenInV0 = (id?: string) => {
+  const handleOpenInV0 = (id?: string, name?: string) => {
+    if (id) {
+      openInV0(id, name);
+      return;
+    }
+
     if (hasThemeChangedFromCheckpoint()) {
       handleSaveClick({ openInV0AfterSave: true });
       return;
     }
 
-    openInV0(id);
+    openInV0();
+  };
+
+  const handleUpdateExisting = async () => {
+    if (!themeState.preset) return;
+    try {
+      const result = await updateThemeMutation.mutateAsync({
+        id: themeState.preset,
+        styles: themeState.styles,
+      });
+      if (result) {
+        applyThemePreset(result.id || themeState.preset);
+        setSaveDialogOpen(false);
+      }
+    } catch (error) {
+      console.error("Failed to update theme:", error);
+    }
   };
 
   const value = {
@@ -232,8 +262,10 @@ function useDialogActionsStore(): DialogActionsContextType {
     shareUrl,
     dialogKey,
     isCreatingTheme: createThemeMutation.isPending,
+    isUpdatingTheme: updateThemeMutation.isPending,
     isGeneratingTheme,
     pendingAction,
+    existingThemeName,
 
     // Dialog actions
     setCssImportOpen,
@@ -247,6 +279,7 @@ function useDialogActionsStore(): DialogActionsContextType {
     handleShareClick,
     handleOpenInV0,
     saveTheme,
+    handleUpdateExisting,
   };
 
   return value;
@@ -278,6 +311,9 @@ export function DialogActionsProvider({ children }: { children: ReactNode }) {
         onOpenChange={store.setSaveDialogOpen}
         onSave={store.saveTheme}
         isSaving={store.isCreatingTheme}
+        existingThemeName={store.existingThemeName}
+        onUpdateExisting={store.handleUpdateExisting}
+        isUpdating={store.isUpdatingTheme}
         {...getSaveDialogCopy(store.pendingAction)}
       />
       <ShareDialog

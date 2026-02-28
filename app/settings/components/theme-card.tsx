@@ -1,6 +1,7 @@
 "use client";
 
-import { Theme } from "@/types/theme"; // Assuming Theme type includes foreground colors
+import { Theme } from "@/types/theme";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
@@ -20,36 +21,60 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { MoreVertical, Trash2, Edit, Loader2, Zap, ExternalLink, Copy } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { TagSelector } from "@/components/tag-selector";
+import {
+  MoreVertical,
+  Trash2,
+  Edit,
+  Loader2,
+  Zap,
+  ExternalLink,
+  Copy,
+  Globe,
+  GlobeLock,
+  Tag,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { useEditorStore } from "@/store/editor-store";
 import { useDeleteTheme } from "@/hooks/themes";
+import {
+  usePublishTheme,
+  useUnpublishTheme,
+  useUpdateCommunityThemeTags,
+} from "@/hooks/themes";
 import Link from "next/link";
 import { toast } from "@/components/ui/use-toast";
+import { ThemePreview } from "@/components/theme-preview";
+
 interface ThemeCardProps {
   theme: Theme;
+  isPublished?: boolean;
   className?: string;
 }
 
-type SwatchDefinition = {
-  name: string; // Text to display on hover
-  bgKey: keyof Theme["styles"]["light" | "dark"]; // Key for background color
-  fgKey: keyof Theme["styles"]["light" | "dark"]; // Key for text color
-};
-
-const swatchDefinitions: SwatchDefinition[] = [
-  { name: "Primary", bgKey: "primary", fgKey: "primary-foreground" },
-  { name: "Secondary", bgKey: "secondary", fgKey: "secondary-foreground" },
-  { name: "Accent", bgKey: "accent", fgKey: "accent-foreground" },
-  { name: "Muted", bgKey: "muted", fgKey: "muted-foreground" },
-  // Special case: Background swatch shows "Foreground" text using the main foreground color
-  { name: "Background", bgKey: "background", fgKey: "foreground" },
-];
-
-export function ThemeCard({ theme, className }: ThemeCardProps) {
+export function ThemeCard({
+  theme,
+  isPublished = false,
+  className,
+}: ThemeCardProps) {
   const { themeState, setThemeState } = useEditorStore();
   const deleteThemeMutation = useDeleteTheme();
+  const publishMutation = usePublishTheme();
+  const unpublishMutation = useUnpublishTheme();
+  const updateTagsMutation = useUpdateCommunityThemeTags();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [showEditTagsDialog, setShowEditTagsDialog] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const mode = themeState.currentMode;
 
   const handleDelete = () => {
@@ -79,15 +104,42 @@ export function ThemeCard({ theme, className }: ThemeCardProps) {
     });
   };
 
-  const colorSwatches = useMemo(() => {
-    return swatchDefinitions.map((def) => ({
-      name: def.name,
-      // Get background color, fallback to a default if necessary (e.g., white)
-      bg: theme.styles[mode][def.bgKey] || "#ffffff",
-      // Get foreground color, fallback to main foreground or a default (e.g., black)
-      fg: theme.styles[mode][def.fgKey] || theme.styles[mode].foreground || "#000000",
-    }));
-  }, [mode, theme.styles]);
+  const handlePublish = () => {
+    setShowPublishDialog(true);
+  };
+
+  const handleConfirmPublish = () => {
+    publishMutation.mutate(
+      { themeId: theme.id, tags: selectedTags },
+      {
+        onSuccess: () => {
+          setShowPublishDialog(false);
+          setSelectedTags([]);
+        },
+      }
+    );
+  };
+
+  const handleEditTags = () => {
+    setSelectedTags([]);
+    setShowEditTagsDialog(true);
+  };
+
+  const handleConfirmEditTags = () => {
+    updateTagsMutation.mutate(
+      { themeId: theme.id, tags: selectedTags },
+      {
+        onSuccess: () => {
+          setShowEditTagsDialog(false);
+          setSelectedTags([]);
+        },
+      }
+    );
+  };
+
+  const handleUnpublish = () => {
+    unpublishMutation.mutate(theme.id);
+  };
 
   return (
     <Card
@@ -96,42 +148,38 @@ export function ThemeCard({ theme, className }: ThemeCardProps) {
         className
       )}
     >
-      <div className="relative flex h-36">
-        {colorSwatches.map((swatch) => (
-          <div
-            // Use a combination for a more robust key
-            key={swatch.name + swatch.bg}
-            className={cn(
-              "group/swatch relative h-full flex-1 transition-all duration-300 ease-in-out",
-              "hover:flex-grow-[1.5]"
-            )}
-            style={{ backgroundColor: swatch.bg }}
-          >
-            <div
-              className={cn(
-                "absolute inset-0 flex items-center justify-center",
-                "opacity-0 group-hover/swatch:opacity-100",
-                "transition-opacity duration-300 ease-in-out",
-                "pointer-events-none text-xs font-medium"
-              )}
-              style={{ color: swatch.fg }}
-            >
-              {swatch.name}
-            </div>
-          </div>
-        ))}
+      <div className="relative h-36 w-full overflow-hidden bg-muted">
+        <ThemePreview
+          styles={theme.styles[mode]}
+          name={theme.name}
+          className="transition-transform duration-300 group-hover:scale-105"
+        />
       </div>
 
       <div className="bg-background flex items-center justify-between p-4">
-        <div>
-          <h3 className={cn("text-foreground text-sm font-medium")}>{theme.name}</h3>
-          <p className="text-muted-foreground text-xs">
-            {new Date(theme.createdAt).toLocaleDateString("en-US", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}
-          </p>
+        <div className="flex items-center gap-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className={cn("text-foreground text-sm font-medium")}>
+                {theme.name}
+              </h3>
+              {isPublished && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0"
+                >
+                  Published
+                </Badge>
+              )}
+            </div>
+            <p className="text-muted-foreground text-xs">
+              {new Date(theme.createdAt).toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
+            </p>
+          </div>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -161,6 +209,43 @@ export function ThemeCard({ theme, className }: ThemeCardProps) {
               Copy URL
             </DropdownMenuItem>
             <DropdownMenuSeparator className="mx-2" />
+            {isPublished ? (
+              <>
+                <DropdownMenuItem
+                  onClick={handleEditTags}
+                  className="gap-2"
+                >
+                  <Tag className="h-4 w-4" />
+                  Edit Tags
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handleUnpublish}
+                  className="gap-2"
+                  disabled={unpublishMutation.isPending}
+                >
+                  {unpublishMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <GlobeLock className="h-4 w-4" />
+                  )}
+                  Unpublish from Community
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <DropdownMenuItem
+                onClick={handlePublish}
+                className="gap-2"
+                disabled={publishMutation.isPending}
+              >
+                {publishMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Globe className="h-4 w-4" />
+                )}
+                Publish to Community
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator className="mx-2" />
             <DropdownMenuItem
               onClick={handleDelete}
               className="text-destructive focus:text-destructive gap-2"
@@ -180,9 +265,14 @@ export function ThemeCard({ theme, className }: ThemeCardProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure you want to delete your {theme.name} theme?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Are you sure you want to delete your {theme.name} theme?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your theme.
+              This action cannot be undone. This will permanently delete your
+              theme.
+              {isPublished &&
+                " It will also be removed from the community."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -194,16 +284,93 @@ export function ThemeCard({ theme, className }: ThemeCardProps) {
             >
               {deleteThemeMutation.isPending ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Deleting...
                 </>
               ) : (
-                'Delete'
+                "Delete"
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Publish &quot;{theme.name}&quot; to the community?
+            </DialogTitle>
+            <DialogDescription>
+              Your theme will be publicly visible on the community page. You can
+              unpublish it at any time.
+            </DialogDescription>
+          </DialogHeader>
+          <TagSelector
+            selectedTags={selectedTags}
+            onTagsChange={setSelectedTags}
+            disabled={publishMutation.isPending}
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowPublishDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmPublish}
+              disabled={publishMutation.isPending}
+            >
+              {publishMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Publishing...
+                </>
+              ) : (
+                "Publish"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditTagsDialog} onOpenChange={setShowEditTagsDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Tags</DialogTitle>
+            <DialogDescription>
+              Update the tags for &quot;{theme.name}&quot;.
+            </DialogDescription>
+          </DialogHeader>
+          <TagSelector
+            selectedTags={selectedTags}
+            onTagsChange={setSelectedTags}
+            disabled={updateTagsMutation.isPending}
+          />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowEditTagsDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmEditTags}
+              disabled={updateTagsMutation.isPending}
+            >
+              {updateTagsMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Tags"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

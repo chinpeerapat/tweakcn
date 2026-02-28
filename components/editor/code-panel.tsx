@@ -21,16 +21,21 @@ import {
 import { usePostHog } from "posthog-js/react";
 import { useEditorStore } from "@/store/editor-store";
 import { usePreferencesStore } from "@/store/preferences-store";
-import { generateThemeCode, generateTailwindConfigCode } from "@/utils/theme-style-generator";
+import {
+  generateThemeCode,
+  generateTailwindConfigCode,
+  generateLayoutCode,
+} from "@/utils/theme-style-generator";
 import { useThemePresetStore } from "@/store/theme-preset-store";
 import { useDialogActions } from "@/hooks/use-dialog-actions";
 import { ColorFormat } from "@/types";
 
 interface CodePanelProps {
   themeEditorState: ThemeEditorState;
+  themeId?: string;
 }
 
-const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
+const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState, themeId }) => {
   const [registryCopied, setRegistryCopied] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("index.css");
@@ -53,11 +58,12 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
 
   const code = generateThemeCode(themeEditorState, colorFormat, tailwindVersion);
   const configCode = generateTailwindConfigCode(themeEditorState, colorFormat, tailwindVersion);
+  const layoutCode = generateLayoutCode(themeEditorState);
 
-  const getRegistryCommand = (preset: string) => {
-    const url = isSavedPreset
-      ? `https://tweakcn.com/r/themes/${preset}`
-      : `https://tweakcn.com/r/themes/${preset}.json`;
+  const getRegistryCommand = (id: string, isSaved: boolean) => {
+    const url = isSaved
+      ? `https://tweakcn.com/r/themes/${id}`
+      : `https://tweakcn.com/r/themes/${id}.json`;
     switch (packageManager) {
       case "pnpm":
         return `pnpm dlx shadcn@latest add ${url}`;
@@ -70,9 +76,12 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
     }
   };
 
+  const registryId = themeId ?? preset;
+  const isRegistrySaved = !!themeId || !!isSavedPreset;
+
   const copyRegistryCommand = async () => {
     try {
-      await navigator.clipboard.writeText(getRegistryCommand(preset ?? "default"));
+      await navigator.clipboard.writeText(getRegistryCommand(registryId ?? "default", isRegistrySaved));
       setRegistryCopied(true);
       setTimeout(() => setRegistryCopied(false), 2000);
       captureCopyEvent("COPY_REGISTRY_COMMAND");
@@ -102,8 +111,9 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
   };
 
   const showRegistryCommand = useMemo(() => {
+    if (themeId) return true;
     return preset && preset !== "default" && !hasUnsavedChanges();
-  }, [preset, hasUnsavedChanges]);
+  }, [themeId, preset, hasUnsavedChanges]);
 
   const PackageManagerHeader = ({ actionButton }: { actionButton: React.ReactNode }) => (
     <div className="flex border-b">
@@ -161,7 +171,7 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
             {showRegistryCommand ? (
               <ScrollArea className="w-full">
                 <div className="overflow-y-hidden pb-2 whitespace-nowrap">
-                  <code className="font-mono text-sm">{getRegistryCommand(preset as string)}</code>
+                  <code className="font-mono text-sm">{getRegistryCommand(registryId as string, isRegistrySaved)}</code>
                 </div>
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
@@ -180,6 +190,8 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
             setTailwindVersion(value);
             if (value === "4" && colorFormat === "hsl") {
               setColorFormat("oklch");
+            }
+            if (activeTab === "tailwind.config.ts") {
               setActiveTab("index.css");
             }
           }}
@@ -221,6 +233,9 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
                 tailwind.config.ts
               </TabsTrigger>
             )}
+            <TabsTrigger value="layout.tsx" className="h-7 px-3 text-sm font-medium">
+              layout.tsx (Next.js)
+            </TabsTrigger>
             <TabsIndicator className="bg-background rounded-sm" />
           </TabsList>
 
@@ -228,7 +243,15 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => copyToClipboard(activeTab === "index.css" ? code : configCode)}
+              onClick={() =>
+                copyToClipboard(
+                  activeTab === "index.css"
+                    ? code
+                    : activeTab === "layout.tsx"
+                      ? layoutCode
+                      : configCode
+                )
+              }
               className="h-8"
               aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
             >
@@ -268,6 +291,18 @@ const CodePanel: React.FC<CodePanelProps> = ({ themeEditorState }) => {
             </ScrollArea>
           </TabsContent>
         )}
+
+        <TabsContent value="layout.tsx" className="overflow-hidden">
+          <ScrollArea className="relative h-full">
+            <CodeBlock
+              code={layoutCode}
+              language="tsx"
+              className="h-full rounded-none border-0"
+            />
+            <ScrollBar orientation="horizontal" />
+            <ScrollBar orientation="vertical" />
+          </ScrollArea>
+        </TabsContent>
       </Tabs>
     </div>
   );
