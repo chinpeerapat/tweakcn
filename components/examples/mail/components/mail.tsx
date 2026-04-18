@@ -51,32 +51,29 @@ export function Mail({
   return (
     <TooltipProvider delayDuration={0}>
       <ResizablePanelGroup
-        direction="horizontal"
-        onLayout={(sizes: number[]) => {
-          document.cookie = `react-resizable-panels:layout:mail=${JSON.stringify(sizes)}`;
+        orientation="horizontal"
+        onLayoutChanged={(layout) => {
+          document.cookie = `react-resizable-panels:layout:mail=${JSON.stringify(layout)}`;
         }}
-        className="h-full max-h-[800px] items-stretch"
+        className="h-full max-h-[min(800px,90vh)] items-stretch"
       >
         <ResizablePanel
-          defaultSize={defaultLayout[0]}
-          collapsedSize={navCollapsedSize}
+          defaultSize={`${defaultLayout[0]}%`}
+          collapsedSize={`${navCollapsedSize}%`}
           collapsible={true}
-          minSize={15}
-          maxSize={20}
-          onCollapse={() => {
-            setIsCollapsed(true);
-            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(true)}`;
-          }}
-          onResize={() => {
-            setIsCollapsed(false);
-            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(false)}`;
+          minSize="15%"
+          maxSize="20%"
+          onResize={(panelSize) => {
+            const collapsed = panelSize.asPercentage <= navCollapsedSize;
+            setIsCollapsed(collapsed);
+            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(collapsed)}`;
           }}
           className={cn(isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out")}
         >
           <div
             className={cn(
-              "flex h-[52px] items-center justify-center",
-              isCollapsed ? "h-[52px]" : "px-2"
+              "flex items-center justify-center px-2 py-1.5",
+              isCollapsed && "px-0"
             )}
           >
             <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
@@ -161,8 +158,8 @@ export function Mail({
           />
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-          <Tabs defaultValue="all">
+        <ResizablePanel defaultSize={`${defaultLayout[1]}%`} minSize="30%">
+          <Tabs defaultValue="all" className="flex h-full flex-col">
             <div className="flex items-center px-4 py-1.5">
               <h1 className="text-foreground text-xl font-bold">Inbox</h1>
               <TabsList className="ml-auto">
@@ -179,16 +176,16 @@ export function Mail({
                 </div>
               </form>
             </div>
-            <TabsContent value="all" className="m-0 h-screen">
+            <TabsContent value="all" className="m-0 min-h-0 flex-1">
               <MailList items={mails} />
             </TabsContent>
-            <TabsContent value="unread" className="m-0 h-screen">
+            <TabsContent value="unread" className="m-0 min-h-0 flex-1">
               <MailList items={mails.filter((item) => !item.read)} />
             </TabsContent>
           </Tabs>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={defaultLayout[2]} minSize={30}>
+        <ResizablePanel defaultSize={`${defaultLayout[2]}%`} minSize="30%">
           <MailDisplay mail={mails.find((item) => item.id === mail.selected) || null} />
         </ResizablePanel>
       </ResizablePanelGroup>

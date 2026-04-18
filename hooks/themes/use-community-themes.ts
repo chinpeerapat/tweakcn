@@ -18,6 +18,7 @@ import type {
   CommunityTheme,
   CommunitySortOption,
   CommunityFilterOption,
+  CommunityTimeRange,
   CommunityThemesResponse,
 } from "@/types/community";
 import { themeKeys } from "./use-themes-data";
@@ -28,8 +29,10 @@ export const communityKeys = {
   list: (
     sort: CommunitySortOption,
     filter: CommunityFilterOption = "all",
-    tags: string[] = []
-  ) => [...communityKeys.all, "list", { sort, filter, tags }] as const,
+    tags: string[] = [],
+    timeRange: CommunityTimeRange = "all"
+  ) =>
+    [...communityKeys.all, "list", { sort, filter, tags, timeRange }] as const,
   myPublished: () => [...communityKeys.all, "my-published"] as const,
   tagCounts: () => [...communityKeys.all, "tag-counts"] as const,
 };
@@ -37,18 +40,26 @@ export const communityKeys = {
 export function useCommunityThemes(
   sort: CommunitySortOption,
   filter: CommunityFilterOption = "all",
-  tags: string[] = []
+  tags: string[] = [],
+  timeRange: CommunityTimeRange = "all"
 ) {
   return useInfiniteQuery({
-    queryKey: communityKeys.list(sort, filter, tags),
+    queryKey: communityKeys.list(sort, filter, tags, timeRange),
     queryFn: async ({ pageParam }) => {
-      return getCommunityThemes(sort, pageParam, undefined, filter, tags);
+      return getCommunityThemes(
+        sort,
+        pageParam,
+        undefined,
+        filter,
+        tags,
+        timeRange
+      );
     },
     initialPageParam: undefined as string | number | undefined,
     getNextPageParam: (lastPage: CommunityThemesResponse) => {
       return lastPage.nextCursor ?? undefined;
     },
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 
@@ -56,7 +67,7 @@ export function useCommunityTagCounts() {
   return useQuery({
     queryKey: communityKeys.tagCounts(),
     queryFn: getCommunityTagCounts,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 15, // 15 minutes
   });
 }
 
@@ -64,7 +75,7 @@ export function useMyPublishedThemeIds() {
   return useQuery({
     queryKey: communityKeys.myPublished(),
     queryFn: getMyPublishedThemeIds,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 }
 
