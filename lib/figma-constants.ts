@@ -1,7 +1,7 @@
 export const FIGMA_CONSTANTS = {
   shadcraftUrl: "https://shadcraft.com?atp=tweakcn",
   previewUrl:
-    "https://www.figma.com/design/MvIIEVqjGPyKbS000yPTEW/WORKING-%E2%80%A2-Shadcraft-Pro-%E2%80%A2-v1.0.0?node-id=7053-59081&t=WaB2vuyccN1cYCmM-11",
+    "https://www.figma.com/design/CvWpT3eKoYnp6EueqhKJ8i/shadcncraft-Pro-%E2%80%A2-v2-%E2%80%A2-Preview?node-id=7053-59081&t=V7oWWuTSlAfi6dOW-11",
   designers: [
     { name: "Designer 1", avatar: "/figma-onboarding/avatar-1.png", fallback: "D1" },
     { name: "Designer 2", avatar: "/figma-onboarding/avatar-2.png", fallback: "D2" },
