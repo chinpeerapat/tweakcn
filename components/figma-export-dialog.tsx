@@ -1,7 +1,7 @@
 "use client";
 
 import Logo from "@/assets/logo.svg";
-import Shadcraft from "@/assets/shadcraft.svg";
+import Shadcncraft from "@/assets/shadcncraft.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -35,7 +35,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="flex max-h-[90%] flex-col overflow-hidden sm:max-h-[min(800px,90dvh)] sm:max-w-180">
+      <ResponsiveDialogContent className="flex max-h-[90%] flex-col overflow-hidden sm:max-h-[min(800px,90dvh)] sm:max-w-200">
         <ScrollArea className="flex h-full flex-col gap-4 overflow-hidden">
           <ResponsiveDialogHeader className="sr-only">
             <ResponsiveDialogTitle>tweakcn × shadcncraft</ResponsiveDialogTitle>
@@ -54,7 +54,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
               <X className="h-4 w-4" />
               <Link href={FIGMA_CONSTANTS.shadcncraftUrl} target="_blank">
                 <div className="flex items-center gap-2">
-                  <Shadcraft className="h-6 w-6" />
+                  <Shadcncraft className="h-6 w-6" />
                   <div className="text-lg font-bold">shadcncraft</div>
                 </div>
               </Link>
@@ -65,7 +65,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
             {/* Hero */}
             <section className="space-y-6 text-center">
               <div className="space-y-3">
-                <h1 className="text-4xl leading-tight font-semibold tracking-tight sm:text-5xl">
+                <h1 className="text-4xl leading-tight font-medium tracking-tight sm:text-5xl">
                   Apply your theme to a premium shadcn/ui design system
                 </h1>
                 <p className="text-muted-foreground mx-auto max-w-md text-sm">
@@ -100,7 +100,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
 
             {/* How it works */}
             <section className="space-y-4">
-              <h2 className="text-center text-2xl font-semibold">How it works</h2>
+              <h2 className="text-center text-2xl font-medium">How it works</h2>
               <div className="border-border rounded-2xl border px-6">
                 <div className="divide-border grid grid-cols-3 divide-x">
                   {FIGMA_CONSTANTS.steps.map((step, index) => (
@@ -112,7 +112,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
                         {STEP_ICONS[index]}
                       </div>
                       <p className="text-muted-foreground text-sm">{step.step}</p>
-                      <h3 className="font-semibold">{step.title}</h3>
+                      <h3 className="font-medium">{step.title}</h3>
                     </div>
                   ))}
                 </div>
@@ -122,7 +122,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
             {/* UI Blocks */}
             <section className="space-y-6 text-center">
               <div className="mx-auto max-w-md space-y-1.5">
-                <h2 className="text-2xl leading-tight font-semibold">
+                <h2 className="text-2xl leading-tight font-medium">
                   Apply this theme to hundreds of production-ready UI blocks.
                 </h2>
                 <p className="text-muted-foreground text-sm">
@@ -148,7 +148,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
             {/* React code */}
             <section className="space-y-6 text-center">
               <div className="mx-auto max-w-md space-y-1.5">
-                <h2 className="text-2xl leading-tight font-semibold">
+                <h2 className="text-2xl leading-tight font-medium">
                   Generate React code from your Figma designs
                 </h2>
                 <p className="text-muted-foreground text-sm">
@@ -177,9 +177,9 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
 
             {/* Pricing */}
             <Card className="p-8">
-              <div className="grid gap-8 md:grid-cols-2">
+              <div className="grid gap-8 md:grid-cols-[3fr_2fr]">
                 <div className="space-y-5">
-                  <h3 className="text-2xl leading-tight font-semibold">
+                  <h3 className="text-2xl leading-tight font-medium">
                     What you get with shadcncraft
                   </h3>
                   <ul className="space-y-2.5">
@@ -197,7 +197,7 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
                 <div className="flex flex-col gap-4 md:items-end">
                   <div className="space-y-1 md:text-right">
                     <p className="text-muted-foreground text-sm">Lifetime access, starting at</p>
-                    <div className="text-5xl font-semibold tracking-tight">$119</div>
+                    <div className="text-5xl font-medium tracking-tight">$119</div>
                   </div>
                   <div className="flex w-full flex-col gap-2.5">
                     <Button className="w-full gap-1.5" onClick={handleBuyNow}>
