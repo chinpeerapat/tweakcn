@@ -1,8 +1,7 @@
 "use client";
 
-import FigmaIcon from "@/assets/figma.svg";
 import Logo from "@/assets/logo.svg";
-import Shadcraft from "@/assets/shadcraft.svg";
+import Shadcncraft from "@/assets/shadcncraft.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,78 +13,70 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/revola";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FIGMA_CONSTANTS, redirectToShadcraft } from "@/lib/figma-constants";
-import { ArrowUpRight, Cable, Check, Figma, Paintbrush, X } from "lucide-react";
+import { FIGMA_CONSTANTS, redirectToShadcncraft } from "@/lib/figma-constants";
+import { ArrowUpRight, CircleCheck, Figma, Paintbrush, Plug, X } from "lucide-react";
 import Link from "next/link";
+
 interface FigmaExportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps) {
-  const steps = FIGMA_CONSTANTS.steps.map((step, index) => ({
-    ...step,
-    icon:
-      index === 0 ? (
-        <Figma className="h-6 w-6" />
-      ) : index === 1 ? (
-        <Cable className="h-6 w-6" />
-      ) : (
-        <Paintbrush className="h-6 w-6" />
-      ),
-  }));
+const STEP_ICONS = [
+  <Figma key="figma" className="h-6 w-6" />,
+  <Plug key="plug" className="h-6 w-6" />,
+  <Paintbrush key="paintbrush" className="h-6 w-6" />,
+];
 
-  const handleGetStarted = () => {
-    redirectToShadcraft();
+export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps) {
+  const handleBuyNow = () => {
+    redirectToShadcncraft();
   };
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="flex max-h-[90%] flex-col overflow-hidden sm:max-h-[min(700px,90dvh)] sm:max-w-150">
-        {/* Header */}
+      <ResponsiveDialogContent className="flex max-h-[90%] flex-col overflow-hidden sm:max-h-[min(800px,90dvh)] sm:max-w-200">
         <ScrollArea className="flex h-full flex-col gap-4 overflow-hidden">
           <ResponsiveDialogHeader className="sr-only">
-            <ResponsiveDialogTitle>Figma Export</ResponsiveDialogTitle>
+            <ResponsiveDialogTitle>tweakcn × shadcncraft</ResponsiveDialogTitle>
             <ResponsiveDialogDescription>
-              Apply your theme to the ultimate Figma UI kit
+              Apply your theme to a premium shadcn/ui design system
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="p-8 py-5 sm:pt-8">
+          {/* Brand header */}
+          <div className="px-8 pt-8 pb-2 sm:pt-8">
             <div className="flex items-center justify-center gap-2">
               <div className="flex items-center gap-2">
                 <Logo className="h-6 w-6" />
                 <div className="text-lg font-bold">tweakcn</div>
               </div>
               <X className="h-4 w-4" />
-              <Link href={FIGMA_CONSTANTS.shadcraftUrl} target="_blank">
+              <Link href={FIGMA_CONSTANTS.shadcncraftUrl} target="_blank">
                 <div className="flex items-center gap-2">
-                  <Shadcraft className="h-6 w-6" />
-                  <div className="text-lg font-bold">shadcraft</div>
+                  <Shadcncraft className="h-6 w-6" />
+                  <div className="text-lg font-bold">shadcncraft</div>
                 </div>
               </Link>
             </div>
           </div>
 
-          <div className="mt-4 space-y-16 px-8 pb-32">
-            {/* Hero Section */}
-            <div className="space-y-6 text-center">
-              <h1 className="text-5xl leading-12 font-semibold tracking-tight">
-                Apply your theme to the ultimate Figma UI kit
-              </h1>
-              <div className="flex justify-center gap-3.5">
-                <Button size="lg" className="h-10 px-8" onClick={handleGetStarted}>
-                  Get started
-                </Button>
-                <Link href={FIGMA_CONSTANTS.previewUrl} target="_blank">
-                  <Button variant="outline" size="lg" className="h-10 gap-2 px-8">
-                    <FigmaIcon className="h-4 w-4" />
-                    Preview
-                  </Button>
-                </Link>
+          <div className="space-y-16 px-8 pt-8 pb-12">
+            {/* Hero */}
+            <section className="space-y-6 text-center">
+              <div className="space-y-3">
+                <h1 className="text-4xl leading-tight font-medium tracking-tight sm:text-5xl">
+                  Apply your theme to a premium shadcn/ui design system
+                </h1>
+                <p className="text-muted-foreground mx-auto max-w-md text-sm">
+                  Import this theme using the shadcncraft plugin and update your shadcn/ui kit in
+                  seconds.
+                </p>
               </div>
-              <div className="space-y-1.5 pt-1">
-                <p className="text-muted-foreground text-sm">Trusted by top designers</p>
+              <Button size="lg" className="h-10 px-8" onClick={handleBuyNow}>
+                Buy now
+              </Button>
+              <div className="space-y-2 pt-1">
                 <div className="flex justify-center -space-x-3">
                   {FIGMA_CONSTANTS.designers.map((designer, index) => (
                     <Avatar key={index} className="border-background h-8 w-8 border-2">
@@ -94,89 +85,138 @@ export function FigmaExportDialog({ open, onOpenChange }: FigmaExportDialogProps
                     </Avatar>
                   ))}
                 </div>
+                <p className="text-muted-foreground text-sm">
+                  Loved by shadcn and 3000+ creators and teams
+                </p>
               </div>
-            </div>
+              <div className="border-border overflow-hidden rounded-2xl border">
+                <img
+                  src="/figma-onboarding/hero-dashboard.png"
+                  alt="shadcncraft Figma kit preview"
+                  className="h-auto w-full"
+                />
+              </div>
+            </section>
+
             {/* How it works */}
-            <div className="space-y-4">
-              <h2 className="text-center text-2xl font-semibold">How it works</h2>
+            <section className="space-y-4">
+              <h2 className="text-center text-2xl font-medium">How it works</h2>
               <div className="border-border rounded-2xl border px-6">
                 <div className="divide-border grid grid-cols-3 divide-x">
-                  {steps.map((step, index) => (
+                  {FIGMA_CONSTANTS.steps.map((step, index) => (
                     <div
                       key={index}
                       className="space-y-2 px-6 py-6 text-center first:pl-0 last:pr-0"
                     >
-                      <div className="text-foreground mb-2 flex justify-center">{step.icon}</div>
+                      <div className="text-foreground mb-2 flex justify-center">
+                        {STEP_ICONS[index]}
+                      </div>
                       <p className="text-muted-foreground text-sm">{step.step}</p>
-                      <h3 className="font-semibold">{step.title}</h3>
+                      <h3 className="font-medium">{step.title}</h3>
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
-            {/* Feature Description */}
-            <div className="space-y-6 text-center">
-              <div className="mx-auto max-w-sm space-y-1.5">
-                <h2 className="text-2xl font-semibold">
-                  Top quality Figma UI kit for professionals
+            </section>
+
+            {/* UI Blocks */}
+            <section className="space-y-6 text-center">
+              <div className="mx-auto max-w-md space-y-1.5">
+                <h2 className="text-2xl leading-tight font-medium">
+                  Apply this theme to hundreds of production-ready UI blocks.
                 </h2>
-                <p className="text-muted-foreground">
-                  Shadcraft is packed with top quality components, true to the shadcn/ui ethos.
+                <p className="text-muted-foreground text-sm">
+                  Select a frame and generate clean, shadcn-compatible React code with structure,
+                  props, and usage examples.
                 </p>
               </div>
-              {/* Demo UI Preview */}
-              <div className="border-border relative overflow-hidden rounded-2xl border">
+              <div className="flex justify-center gap-3">
+                <Button onClick={handleBuyNow}>Buy now</Button>
+                <Link href={FIGMA_CONSTANTS.previewUrl} target="_blank">
+                  <Button variant="outline">Preview Blocks</Button>
+                </Link>
+              </div>
+              <div className="border-border overflow-hidden rounded-2xl border">
                 <img
-                  src="/figma-onboarding/shadcraft-preview.jpg"
-                  alt="Shadcraft Figma UI Kit Preview"
+                  src="/figma-onboarding/ui-blocks-grid.png"
+                  alt="Production-ready UI blocks gallery"
                   className="h-auto w-full"
                 />
               </div>
-              <Link href={FIGMA_CONSTANTS.shadcraftUrl} target="_blank">
-                <Button variant="link" className="gap-1 text-sm">
-                  More on Shadcraft
-                  <ArrowUpRight className="h-3 w-3" />
+            </section>
+
+            {/* React code */}
+            <section className="space-y-6 text-center">
+              <div className="mx-auto max-w-md space-y-1.5">
+                <h2 className="text-2xl leading-tight font-medium">
+                  Generate React code from your Figma designs
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  Select a frame and generate clean, shadcn-compatible React code with structure,
+                  props, and usage examples.
+                </p>
+              </div>
+              <Link
+                href={FIGMA_CONSTANTS.previewUrl}
+                target="_blank"
+                className="inline-block"
+              >
+                <Button variant="outline" className="gap-1.5">
+                  Preview
+                  <ArrowUpRight className="h-4 w-4" />
                 </Button>
               </Link>
-            </div>
+              <div className="border-border overflow-hidden rounded-2xl border">
+                <img
+                  src="/figma-onboarding/react-code-preview.png"
+                  alt="React code generated from a Figma frame"
+                  className="h-auto w-full"
+                />
+              </div>
+            </section>
+
             {/* Pricing */}
-            <div className="space-y-6">
-              <h2 className="text-center text-2xl font-semibold">Pricing</h2>
-              <Card className="p-6">
-                <div className="grid gap-7 md:grid-cols-2">
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">What you get with Shadcraft</h3>
-                    <div className="space-y-2">
-                      {FIGMA_CONSTANTS.features.map((feature, index) => (
-                        <div key={index} className="flex items-center gap-1.5">
-                          <Check className="h-4 w-4 text-green-600" />
-                          <span className="text-sm">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="mt-6 space-y-1.5">
-                      <div className="flex items-end gap-1">
-                        <span className="text-5xl font-semibold">$119</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <Button className="flex-1" onClick={handleGetStarted}>
-                        Get started
-                      </Button>
-                      <Link href={FIGMA_CONSTANTS.previewUrl} target="_blank">
-                        <Button variant="outline" className="gap-2">
-                          <FigmaIcon className="h-4 w-4" />
-                          Preview
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+            <Card className="p-8">
+              <div className="grid gap-8 md:grid-cols-[3fr_2fr]">
+                <div className="space-y-5">
+                  <h3 className="text-2xl leading-tight font-medium">
+                    What you get with shadcncraft
+                  </h3>
+                  <ul className="space-y-2.5">
+                    {FIGMA_CONSTANTS.features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-2.5 text-sm">
+                        <CircleCheck
+                          className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0"
+                          strokeWidth={1.5}
+                        />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </Card>
-              <p className="text-muted-foreground text-center text-xs">Prices in USD</p>
-            </div>
+                <div className="flex flex-col gap-4 md:items-end">
+                  <div className="space-y-1 md:text-right">
+                    <p className="text-muted-foreground text-sm">Lifetime access, starting at</p>
+                    <div className="text-5xl font-medium tracking-tight">$119</div>
+                  </div>
+                  <div className="flex w-full flex-col gap-2.5">
+                    <Button className="w-full gap-1.5" onClick={handleBuyNow}>
+                      Buy now
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Button>
+                    <Link href={FIGMA_CONSTANTS.shadcncraftUrl} target="_blank" className="block">
+                      <Button variant="outline" className="w-full gap-1.5">
+                        Start for free
+                        <ArrowUpRight className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                  <p className="text-muted-foreground text-xs md:text-right">
+                    One-time payment. Plus local taxes
+                  </p>
+                </div>
+              </div>
+            </Card>
           </div>
         </ScrollArea>
       </ResponsiveDialogContent>

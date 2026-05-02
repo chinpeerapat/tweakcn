@@ -6,11 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Logo from "@/assets/logo.svg";
-import Shadcraft from "@/assets/shadcraft.svg";
+import Shadcncraft from "@/assets/shadcraft.svg";
 import FigmaIcon from "@/assets/figma.svg";
-import { Check, X, ArrowUpRight, Figma, Cable, Paintbrush } from "lucide-react";
+import { Check, X, ArrowUpRight, Figma, Plug, Paintbrush } from "lucide-react";
 import Link from "next/link";
-import { FIGMA_CONSTANTS, redirectToShadcraft } from "@/lib/figma-constants";
+import { FIGMA_CONSTANTS, redirectToShadcncraft } from "@/lib/figma-constants";
 
 export default function FigmaPage() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -22,14 +22,14 @@ export default function FigmaPage() {
       index === 0 ? (
         <Figma className="h-6 w-6" />
       ) : index === 1 ? (
-        <Cable className="h-6 w-6" />
+        <Plug className="h-6 w-6" />
       ) : (
         <Paintbrush className="h-6 w-6" />
       ),
   }));
 
   const handleGetStarted = () => {
-    redirectToShadcraft();
+    redirectToShadcncraft();
   };
 
   useEffect(() => {
@@ -49,13 +49,13 @@ export default function FigmaPage() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: "Shadcraft Figma UI Kit - tweakcn Integration",
+    name: "Shadcncraft Figma UI Kit - tweakcn Integration",
     description:
       "Professional Figma UI kit with 51 components, 44 blocks, dark mode support, and seamless tweakcn theme integration",
     image: "https://tweakcn.com/figma-onboarding/shadcraft-preview.jpg",
     brand: {
       "@type": "Brand",
-      name: "Shadcraft",
+      name: "Shadcncraft",
     },
     offers: {
       "@type": "Offer",
@@ -63,10 +63,10 @@ export default function FigmaPage() {
       priceCurrency: "USD",
       priceValidUntil: "2025-12-31",
       availability: "https://schema.org/InStock",
-      url: FIGMA_CONSTANTS.shadcraftUrl,
+      url: FIGMA_CONSTANTS.shadcncraftUrl,
       seller: {
         "@type": "Organization",
-        name: "Shadcraft",
+        name: "Shadcncraft",
       },
     },
     aggregateRating: {
@@ -124,10 +124,10 @@ export default function FigmaPage() {
                 <div className="text-lg font-bold">tweakcn</div>
               </div>
               <X className="h-4 w-4" aria-hidden="true" />
-              <Link href={FIGMA_CONSTANTS.shadcraftUrl} target="_blank" rel="noopener noreferrer">
+              <Link href={FIGMA_CONSTANTS.shadcncraftUrl} target="_blank" rel="noopener noreferrer">
                 <div className="flex items-center gap-2">
-                  <Shadcraft className="h-6 w-6" alt="Shadcraft logo" />
-                  <div className="text-lg font-bold">shadcraft</div>
+                  <Shadcncraft className="h-6 w-6" alt="Shadcncraft logo" />
+                  <div className="text-lg font-bold">shadcncraft</div>
                 </div>
               </Link>
             </div>
@@ -198,7 +198,7 @@ export default function FigmaPage() {
                   Top quality Figma UI kit for professionals
                 </h2>
                 <p className="text-muted-foreground">
-                  Shadcraft is packed with top quality components, true to the shadcn/ui ethos.
+                  Shadcncraft is packed with top quality components, true to the shadcn/ui ethos.
                 </p>
               </div>
 
@@ -206,7 +206,7 @@ export default function FigmaPage() {
               <figure className="border-border relative overflow-hidden rounded-2xl border">
                 <img
                   src="/figma-onboarding/shadcraft-preview.jpg"
-                  alt="Shadcraft Figma UI Kit Preview showing various components and design blocks"
+                  alt="Shadcncraft Figma UI Kit Preview showing various components and design blocks"
                   className="h-auto w-full"
                   loading="lazy"
                   width="600"
@@ -214,9 +214,9 @@ export default function FigmaPage() {
                 />
               </figure>
 
-              <Link href={FIGMA_CONSTANTS.shadcraftUrl} target="_blank" rel="noopener noreferrer">
+              <Link href={FIGMA_CONSTANTS.shadcncraftUrl} target="_blank" rel="noopener noreferrer">
                 <Button variant="link" className="gap-1 text-sm">
-                  More on Shadcraft
+                  More on Shadcncraft
                   <ArrowUpRight className="h-3 w-3" />
                 </Button>
               </Link>
@@ -227,7 +227,7 @@ export default function FigmaPage() {
               <h2 className="text-center text-2xl font-semibold">Pricing</h2>
 
               <Card className="p-6">
-                <h3 className="mb-4 font-semibold">What you get with Shadcraft</h3>
+                <h3 className="mb-4 font-semibold">What you get with Shadcncraft</h3>
                 <div className="grid gap-7 md:grid-cols-2">
                   <div className="space-y-4">
                     <ul className="space-y-2" role="list">
