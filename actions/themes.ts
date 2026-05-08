@@ -19,7 +19,7 @@ import {
   type ActionResult,
 } from "@/types/errors";
 import { MAX_FREE_THEMES } from "@/lib/constants";
-import { getMyActiveSubscription } from "@/lib/subscription";
+import { hasProEntitlement } from "@/lib/subscription";
 
 // Helper to get user ID with better error handling
 async function getCurrentUserId(): Promise<string> {
@@ -118,10 +118,7 @@ export async function createTheme(formData: { name: string; styles: ThemeStyles 
     const userThemes = await db.select().from(themeTable).where(eq(themeTable.userId, userId));
 
     if (userThemes.length >= MAX_FREE_THEMES) {
-      const activeSubscription = await getMyActiveSubscription(userId);
-      const isSubscribed =
-        !!activeSubscription &&
-        activeSubscription?.productId === process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
+      const isSubscribed = await hasProEntitlement(userId);
 
       if (!isSubscribed) {
         return actionError(

@@ -5,6 +5,7 @@ export interface SubscriptionCheck extends SubscriptionStatus {
 
 export interface SubscriptionStatus {
   isSubscribed: boolean;
+  isBillingManaged?: boolean;
   requestsUsed: number;
   requestsRemaining: number;
 }
