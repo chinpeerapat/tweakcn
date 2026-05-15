@@ -52,6 +52,10 @@ export async function POST(req: NextRequest) {
     const modelMessages = await convertMessagesToModelMessages(messages);
 
     const stream = createUIMessageStream<ChatMessage>({
+      onError: (error) => {
+        console.error("[/api/generate-theme] stream error:", error);
+        return "Failed to generate theme. Please try again.";
+      },
       execute: ({ writer }) => {
         const context: AdditionalAIContext = { writer };
         const model = myProvider.languageModel("base");
@@ -84,6 +88,10 @@ export async function POST(req: NextRequest) {
 
         writer.merge(
           result.toUIMessageStream({
+            onError: (error) => {
+              console.error("[/api/generate-theme] streamText error:", error);
+              return "Failed to generate theme. Please try again.";
+            },
             messageMetadata: ({ part }) => {
               // `toolName` is not typed for some reason, must be kept in sync with the actual tool names
               if (part.type === "tool-result" && part.toolName === "generateTheme") {

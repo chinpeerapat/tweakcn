@@ -31,7 +31,12 @@ export async function POST(req: NextRequest) {
       }),
     });
 
-    return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse({
+      onError: (error) => {
+        console.error("[/api/enhance-prompt] stream error:", error);
+        return "Failed to enhance prompt. Please try again.";
+      },
+    });
   } catch (error) {
     return handleError(error, { route: "/api/enhance-prompt" });
   }
