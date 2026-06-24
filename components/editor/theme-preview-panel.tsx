@@ -1,6 +1,5 @@
 "use client";
 
-import ShadcnBlocksLogo from "@/assets/shadcnblocks.svg";
 import { HorizontalScrollArea } from "@/components/horizontal-scroll-area";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { TooltipWrapper } from "@/components/tooltip-wrapper";
@@ -19,7 +18,6 @@ import { useThemeInspector } from "@/hooks/use-theme-inspector";
 import { cn } from "@/lib/utils";
 import { ThemeEditorPreviewProps } from "@/types/theme";
 import { Inspect, Maximize, Minimize, MoreVertical } from "lucide-react";
-import Link from "next/link";
 import { useQueryState } from "nuqs";
 import { lazy } from "react";
 import InspectorOverlay from "./inspector-overlay";
@@ -28,9 +26,10 @@ import ExamplesPreviewContainer from "./theme-preview/examples-preview-container
 import TabsTriggerPill from "./theme-preview/tabs-trigger-pill";
 
 const DemoCards = lazy(() => import("@/components/examples/cards"));
+const DemoApplication = lazy(() => import("@/components/examples/application"));
+const DemoMarketing = lazy(() => import("@/components/examples/marketing"));
 const DemoMail = lazy(() => import("@/components/examples/mail"));
 const DemoDashboard = lazy(() => import("@/components/examples/dashboard"));
-const DemoPricing = lazy(() => import("@/components/examples/pricing/pricing"));
 const TypographyDemo = lazy(() => import("@/components/examples/typography/typography-demo"));
 const CustomDemo = lazy(() => import("@/components/examples/custom"));
 
@@ -96,10 +95,9 @@ const ThemePreviewPanel = ({
 
               <div className="hidden md:flex">
                 <TabsTriggerPill value="dashboard">Dashboard</TabsTriggerPill>
-                <TabsTriggerPill value="mail">Mail</TabsTriggerPill>
+                <TabsTriggerPill value="application">Application</TabsTriggerPill>
               </div>
-              <TabsTriggerPill value="pricing">Pricing</TabsTriggerPill>
-              <TabsTriggerPill value="colors">Color Palette</TabsTriggerPill>
+              <TabsTriggerPill value="marketing">Marketing</TabsTriggerPill>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -110,8 +108,12 @@ const ThemePreviewPanel = ({
                   </TooltipWrapper>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleTabChange("mail")}>Mail</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleTabChange("typography")}>
                     Typography
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleTabChange("colors")}>
+                    Color Palette
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -119,7 +121,11 @@ const ThemePreviewPanel = ({
 
             <div className="flex items-center gap-0.5">
               <TooltipWrapper label="Open theme in v0" asChild>
-                <Button variant="ghost" onClick={() => handleOpenInV0(themeId, themeName)} className="group px-2.5">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleOpenInV0(themeId, themeName)}
+                  className="group px-2.5"
+                >
                   <span className="flex items-center justify-center gap-1 transition-all group-hover:scale-110">
                     Open in <V0Logo className="mb-0.5 !size-5" />
                   </span>
@@ -168,9 +174,17 @@ const ThemePreviewPanel = ({
             </div>
           </HorizontalScrollArea>
 
-          <section className={cn("relative size-full overflow-hidden", activeTab === "cards" ? "pb-4" : "p-4 pt-1")}>
+          <section
+            className={cn(
+              "relative size-full overflow-hidden",
+              activeTab === "cards" ? "pb-4" : "p-4 pt-1"
+            )}
+          >
             <div
-              className={cn("relative isolate size-full overflow-hidden", activeTab !== "cards" && "rounded-lg")}
+              className={cn(
+                "relative isolate size-full overflow-hidden",
+                activeTab !== "cards" && "rounded-lg"
+              )}
               ref={rootRef}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
@@ -200,31 +214,18 @@ const ThemePreviewPanel = ({
                 </ExamplesPreviewContainer>
               </TabsContent>
 
-              <TabsContent value="pricing" className="@container mt-0 h-full space-y-6">
+              <TabsContent value="application" className="@container m-0 size-full">
                 <ExamplesPreviewContainer className="size-full">
-                  <div className="absolute top-4 right-4 z-10">
-                    <Link
-                      href="https://shadcnblocks.com?utm_source=tweakcn&utm_medium=theme-editor-preview"
-                      target="_blank"
-                    >
-                      <Button variant="outline" className="group h-12 shadow-sm">
-                        <div className="flex items-center gap-2">
-                          <ShadcnBlocksLogo
-                            className="shrink-0"
-                            style={{ width: "24px", height: "24px" }}
-                          />
-                          <div className="text-left">
-                            <div className="font-bold">Shadcnblocks.com</div>
-                            <div className="text-muted-foreground group-hover:text-accent-foreground text-xs transition-colors">
-                              600+ extra shadcn blocks
-                            </div>
-                          </div>
-                        </div>
-                      </Button>
-                    </Link>
-                  </div>
                   <ScrollArea className="size-full">
-                    <DemoPricing />
+                    <DemoApplication />
+                  </ScrollArea>
+                </ExamplesPreviewContainer>
+              </TabsContent>
+
+              <TabsContent value="marketing" className="@container m-0 size-full">
+                <ExamplesPreviewContainer className="size-full">
+                  <ScrollArea className="size-full [&_[data-slot=scroll-area-scrollbar]]:z-[60]">
+                    <DemoMarketing />
                   </ScrollArea>
                 </ExamplesPreviewContainer>
               </TabsContent>
