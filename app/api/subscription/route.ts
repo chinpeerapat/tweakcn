@@ -6,11 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     const userId = await getCurrentUserId(request);
-    const { isSubscribed, requestsRemaining, requestsUsed } =
+    const { isSubscribed, isBillingManaged, requestsRemaining, requestsUsed } =
       await validateSubscriptionAndUsage(userId);
 
     const response: SubscriptionStatus = {
       isSubscribed,
+      isBillingManaged,
       requestsRemaining,
       requestsUsed,
     };

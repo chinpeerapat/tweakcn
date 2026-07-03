@@ -7,8 +7,35 @@ import { NextRequest } from "next/server";
 import { AI_REQUEST_FREE_TIER_LIMIT } from "./constants";
 import { getCurrentUserId } from "./shared";
 import { db } from "@/db";
-import { subscription } from "@/db/schema";
+import { subscription, user as userTable } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+
+const UNLIMITED_REQUESTS_REMAINING = Number.MAX_SAFE_INTEGER;
+
+function getOwnerEmails(): Set<string> {
+  const raw = process.env.TWEAKCN_OWNER_EMAILS ?? process.env.TWEAKCN_OWNER_EMAIL ?? "";
+
+  return new Set(
+    raw
+      .split(",")
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean)
+  );
+}
+
+export async function isOwnerUser(userId: string): Promise<boolean> {
+  const ownerEmails = getOwnerEmails();
+
+  if (ownerEmails.size === 0) return false;
+
+  const [currentUser] = await db
+    .select({ email: userTable.email })
+    .from(userTable)
+    .where(eq(userTable.id, userId))
+    .limit(1);
+
+  return currentUser ? ownerEmails.has(currentUser.email.toLowerCase()) : false;
+}
 
 export async function getMyActiveSubscription(
   userId: string
@@ -20,10 +47,24 @@ export async function getMyActiveSubscription(
   return sub[0];
 }
 
+export async function hasProEntitlement(userId: string): Promise<boolean> {
+  const [activeSubscription, ownerUser] = await Promise.all([
+    getMyActiveSubscription(userId),
+    isOwnerUser(userId),
+  ]);
+
+  const hasActiveSubscription =
+    !!activeSubscription &&
+    activeSubscription?.productId === process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
+
+  return ownerUser || hasActiveSubscription;
+}
+
 export async function validateSubscriptionAndUsage(userId: string): Promise<SubscriptionCheck> {
   try {
-    const [activeSubscription, requestsUsed] = await Promise.all([
+    const [activeSubscription, ownerUser, requestsUsed] = await Promise.all([
       getMyActiveSubscription(userId),
+      isOwnerUser(userId),
       getMyAllTimeRequestCount(userId),
     ]);
 
@@ -31,12 +72,13 @@ export async function validateSubscriptionAndUsage(userId: string): Promise<Subs
       !!activeSubscription &&
       activeSubscription?.productId === process.env.NEXT_PUBLIC_TWEAKCN_PRO_PRODUCT_ID;
 
-    if (isSubscribed) {
+    if (ownerUser || isSubscribed) {
       return {
         canProceed: true,
         isSubscribed: true,
+        isBillingManaged: isSubscribed,
         requestsUsed,
-        requestsRemaining: Infinity, // Unlimited for subscribers
+        requestsRemaining: UNLIMITED_REQUESTS_REMAINING,
       };
     }
 
@@ -56,6 +98,7 @@ export async function validateSubscriptionAndUsage(userId: string): Promise<Subs
     return {
       canProceed: true,
       isSubscribed: false,
+      isBillingManaged: false,
       requestsUsed,
       requestsRemaining,
     };

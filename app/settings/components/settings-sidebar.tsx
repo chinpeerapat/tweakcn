@@ -44,11 +44,11 @@ export function SettingsSidebar() {
   const { subscriptionStatus } = useSubscription();
 
   const navItems = useMemo(() => {
-    if (subscriptionStatus?.isSubscribed) {
+    if (subscriptionStatus?.isBillingManaged) {
       return [...BASE_NAV_ITEMS, ...getSubscriptionNavItems()];
     }
     return BASE_NAV_ITEMS;
-  }, [subscriptionStatus?.isSubscribed]);
+  }, [subscriptionStatus?.isBillingManaged]);
 
   return (
     <aside className="w-64 shrink-0">
